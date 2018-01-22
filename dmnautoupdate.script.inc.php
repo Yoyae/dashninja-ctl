@@ -1,21 +1,21 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-ctl
+    This file is part of Monoeci Ninja.
+    https://github.com/Yoyae/monoecininja-ctl
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    Monoeci Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    Monoeci Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with Monoeci Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
@@ -55,7 +55,7 @@ else {
     $data = array("Content-Length" => "-1",'Last-Modified' => 'Always');
 }
 
-xecho("Fetching from DASH Atlassian Bamboo server: ");
+xecho("Fetching from MONOECI Atlassian Bamboo server: ");
 
 $url = DMN_AUTOUPDATE_TEST;
 $headers = get_headers($url, 1);
@@ -118,27 +118,27 @@ else {
         }
         closedir($handle);
     }
-    $dashdpath = $tdir."/".$folder."/bin/dashd";
-    if (($folder === FALSE) || (!file_exists($dashdpath))) {
+    $monoecidpath = $tdir."/".$folder."/bin/monoecid";
+    if (($folder === FALSE) || (!file_exists($monoecidpath))) {
         echo "ERROR (Could not extract correctly)\n";
         die2(5);
     }
-    echo "OK (".$dashdpath.")\n";
+    echo "OK (".$monoecidpath.")\n";
     xecho("Retrieving version number: ");
-    exec($dashdpath." -?",$output,$ret);
+    exec($monoecidpath." -?",$output,$ret);
     if ($ret != 0) {
-        echo "ERROR (dashd return code $ret)\n";
+        echo "ERROR (monoecid return code $ret)\n";
         die2(5);
     }
-    if (!preg_match('/^Dash Core Daemon version v(.+)$/',$output[0],$match)) {
-        echo "ERROR (dashd return version do not match regexp '".$output[0]."')\n";
+    if (!preg_match('/^Monoeci Core Daemon version v(.+)$/',$output[0],$match)) {
+        echo "ERROR (monoecid return version do not match regexp '".$output[0]."')\n";
         die2(6);
     };
     $version = $match[1];
     echo "OK (".$version.")\n";
     xecho("Adding new version to database: ");
-    rename($dashdpath,"/opt/dashd/0.12/dashd-".$version);
-    exec("/opt/dmnctl/dmnctl version /opt/dashd/0.12/dashd-".$version." ".$version." 1 1",$output,$ret);
+    rename($monoecidpath,"/opt/monoecid/0.12/monoecid-".$version);
+    exec("/opt/dmnctl/dmnctl version /opt/monoecid/0.12/monoecid-".$version." ".$version." 1 1",$output,$ret);
     var_dump($output);
     var_dump($ret);
     delTree($tdir);

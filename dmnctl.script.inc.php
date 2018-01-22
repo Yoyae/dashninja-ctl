@@ -1,21 +1,21 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-ctl
+    This file is part of Monoeci Ninja.
+    https://github.com/Yoyae/monoecininja-ctl
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    Monoeci Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    Monoeci Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with Monoeci Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
@@ -55,7 +55,7 @@ function dmn_getcountry($mnip,&$countrycode) {
 function dmn_getip($pid,$uname) {
 
   $res = false;
-  exec('netstat -ntpl | grep "tcp  " | egrep ":(1)?9999" | grep "'.$pid.'/darkcoind\|'.$pid.'/dashd"',$output,$retval);
+  exec('netstat -ntpl | grep "tcp  " | egrep ":(1)?9999" | grep "'.$pid.'/darkcoind\|'.$pid.'/monoecid"',$output,$retval);
   if (isset($output[0])) {
     if (preg_match("/tcp        0      0 (\d*\.\d*.\d*.\d*:\d*)/", $output[0], $output_array) == 1) {
       $res = $output_array[1];
@@ -98,7 +98,7 @@ function dmn_getpids($nodes,$isstatus = false,$istestnet) {
   foreach($nodes as $uname => $node) {
     if (intval($node["NodeTestNet"]) == $istestnet) {
         if (is_dir(DMN_PID_PATH . $uname)) {
-            $conf = new DashConfig($uname);
+            $conf = new MonoeciConfig($uname);
             if ($conf->isConfigLoaded()) {
                 if ($node['NodeTestNet'] != $conf->getconfig('testnet')) {
                     xecho("$uname: Configuration inconsistency (testnet/" . $node['NodeTestNet'] . "/" . $conf->getconfig('testnet') . ")\n");
@@ -113,7 +113,7 @@ function dmn_getpids($nodes,$isstatus = false,$istestnet) {
                     'type' => $node['NodeType'],
                     'enabled' => ($node['NodeEnabled'] == 1),
                     'testnet' => ($node['NodeTestNet'] == 1),
-                    'dashd' => $node['VersionPath'],
+                    'monoecid' => $node['VersionPath'],
                     'currentbin' => '',
                     'keeprunning' => ($node['KeepRunning'] == 1),
                     'keepuptodate' => ($node['KeepUpToDate'] == 1),
@@ -162,7 +162,7 @@ function dmn_getpids($nodes,$isstatus = false,$istestnet) {
 
 }
 
-function dmn_getstatus($dashdinfo,$blockhash) {
+function dmn_getstatus($monoecidinfo,$blockhash) {
 
   $res = array('version' => false,
                'protocol' => false,
@@ -173,27 +173,27 @@ function dmn_getstatus($dashdinfo,$blockhash) {
                'blockhash' => $blockhash,
                'testnet' => 0);
 
-  if ($dashdinfo !== false) {
-    if (array_key_exists('version',$dashdinfo)) {
-      $res['version'] = $dashdinfo['version'];
+  if ($monoecidinfo !== false) {
+    if (array_key_exists('version',$monoecidinfo)) {
+      $res['version'] = $monoecidinfo['version'];
     }
-    if (array_key_exists('protocolversion',$dashdinfo)) {
-      $res['protocol'] = $dashdinfo['protocolversion'];
+    if (array_key_exists('protocolversion',$monoecidinfo)) {
+      $res['protocol'] = $monoecidinfo['protocolversion'];
     }
-    if (array_key_exists('difficulty',$dashdinfo)) {
-      $res['difficulty'] = $dashdinfo['difficulty'];
+    if (array_key_exists('difficulty',$monoecidinfo)) {
+      $res['difficulty'] = $monoecidinfo['difficulty'];
     }
-    if (array_key_exists('blocks',$dashdinfo)) {
-      $res['blocks'] = $dashdinfo['blocks'];
+    if (array_key_exists('blocks',$monoecidinfo)) {
+      $res['blocks'] = $monoecidinfo['blocks'];
     }
-    if (array_key_exists('connections',$dashdinfo)) {
-      $res['connections'] = $dashdinfo['connections'];
+    if (array_key_exists('connections',$monoecidinfo)) {
+      $res['connections'] = $monoecidinfo['connections'];
     }
-    if (array_key_exists('testnet',$dashdinfo)
-     && $dashdinfo['testnet']) {
+    if (array_key_exists('testnet',$monoecidinfo)
+     && $monoecidinfo['testnet']) {
       $res['testnet'] = 1;
     }
-    $res['encryptedwallet'] = array_key_exists('unlocked_until',$dashdinfo);
+    $res['encryptedwallet'] = array_key_exists('unlocked_until',$monoecidinfo);
   }
   return $res;
 
@@ -392,17 +392,17 @@ function dmn_help($exename) {
   echo "restart        Restarts nodes                   option1 = testnet|mainnet, option2 = all|masternode|p2pool\n";
   echo "stop           Stop nodes                       option1 = testnet|mainnet, option2 = all|masternode|p2pool\n";
   echo "\n";
-  echo "version        Create a new dashd version       option1 = binary path\n";
+  echo "version        Create a new monoecid version       option1 = binary path\n";
   echo "                                                option2 = display string\n";
   echo "                                                option3 = testnet only (1 or 0)\n";
   echo "                                                option4 = enabled (1 or 0)\n";
 }
 
-// Create a new dashd version in the database usable by nodes
+// Create a new monoecid version in the database usable by nodes
 function dmn_version_create($versionpath, $versiondisplay, $testnet, $enabled) {
 
   xecho("Retrieving raw version number from binary: ");
-  $versionraw = dmn_dashdversion($versionpath);
+  $versionraw = dmn_monoecidversion($versionpath);
   if ($versionraw !== false) {
     echo "OK ($versionraw)\n";
     chmod($versionpath,0755);
@@ -470,7 +470,7 @@ function dmn_version_create($versionpath, $versiondisplay, $testnet, $enabled) {
 
 }
 
-// Create a new Dash Masternode user, prepare folder and configuration
+// Create a new Monoeci Masternode user, prepare folder and configuration
 function dmn_create($dmnpid,$ip,$forcename = '') {
 
   if ($forcename == '') {
@@ -489,7 +489,7 @@ function dmn_create($dmnpid,$ip,$forcename = '') {
     $testinfo = '';
   }
   echo "Creating $newuname: ";
-  exec('useradd -m -c "Dash$testinfo MasterNode #'.$newnum.'" -U -s /bin/false -p '.randomPassword(128).' '.$newuname.' 1>/dev/null 2>/dev/null',$output,$retval);
+  exec('useradd -m -c "Monoeci$testinfo MasterNode #'.$newnum.'" -U -s /bin/false -p '.randomPassword(128).' '.$newuname.' 1>/dev/null 2>/dev/null',$output,$retval);
   if ($retval != 0) {
     echo "Already exists!\n";
     if ($forcename == '') {
@@ -499,15 +499,15 @@ function dmn_create($dmnpid,$ip,$forcename = '') {
   else {
     echo "retval=$retval\n";
   }
-  echo "Generating dash.conf";
-  mkdir("/home/$newuname/.dashcore");
-  touch("/home/$newuname/.dashcore/dash.conf");
-  chmod("/home/$newuname/.dashcore",0700);
-  chmod("/home/$newuname/.dashcore/dash.conf",0600);
+  echo "Generating monoeci.conf";
+  mkdir("/home/$newuname/.monoecicore");
+  touch("/home/$newuname/.monoecicore/monoeci.conf");
+  chmod("/home/$newuname/.monoecicore",0700);
+  chmod("/home/$newuname/.monoecicore/monoeci.conf",0600);
   $conflist = array('server=1',
          'rpcuser='.$newuname.'rpc',
          'rpcpassword='.randomPassword(128),
-         'alertnotify=echo %s | mail -s "Dash MasterNode #'.str_pad($newnum,2,'0',STR_PAD_LEFT).' Alert" somebody@mowhere.blackhole',
+         'alertnotify=echo %s | mail -s "Monoeci MasterNode #'.str_pad($newnum,2,'0',STR_PAD_LEFT).' Alert" somebody@mowhere.blackhole',
          'rpcallowip=127.0.0.1',
          "bind=$ip",
          'rpcport='.(intval($newnum)+DMNCTLRPCPORTVAL).'998',
@@ -518,8 +518,8 @@ function dmn_create($dmnpid,$ip,$forcename = '') {
     $conflist[] = 'testnet=1';
   }
 
-  $dashconf = implode("\n",$conflist);
-  file_put_contents("/home/$newuname/.dashcore/dash.conf",$dashconf);
+  $monoeciconf = implode("\n",$conflist);
+  file_put_contents("/home/$newuname/.monoecicore/monoeci.conf",$monoeciconf);
   echo "OK\n";
   echo "Setting ACL";
   if (file_exists("/home/$newuname/.bash_history")) {
@@ -529,10 +529,10 @@ function dmn_create($dmnpid,$ip,$forcename = '') {
   chmod("/home/$newuname/.profile",0600);
   chmod("/home/$newuname/.bash_logout",0600);
   chmod("/home/$newuname/",0700);
-  chown("/home/$newuname/.dashcore/",$newuname);
-  chgrp("/home/$newuname/.dashcore/",$newuname);
-  chown("/home/$newuname/.dashcore/dash.conf",$newuname);
-  chgrp("/home/$newuname/.dashcore/dash.conf",$newuname);
+  chown("/home/$newuname/.monoecicore/",$newuname);
+  chgrp("/home/$newuname/.monoecicore/",$newuname);
+  chown("/home/$newuname/.monoecicore/monoeci.conf",$newuname);
+  chgrp("/home/$newuname/.monoecicore/monoeci.conf",$newuname);
   echo "OK\n";
   echo "Add to /etc/network/interfaces\n";
   echo "        post-up /sbin/ifconfig eth0:$newnum $ip netmask 255.255.255.255 broadcast $ip\n";
@@ -540,12 +540,12 @@ function dmn_create($dmnpid,$ip,$forcename = '') {
 
 }
 
-// Set the enable flag to 0 in dash.conf to disable the Masternode
+// Set the enable flag to 0 in monoeci.conf to disable the Masternode
 function dmn_disable($dmnpid,$dmntodisable) {
   foreach ($dmntodisable as $uname) {
     echo "Disabling $uname: ";
     if (dmn_finduname($dmnpid,$uname)) {
-      $conf = new DashConfig($uname);
+      $conf = new MonoeciConfig($uname);
       if (($conf->getmnctlconfig('enable') == 0) && ($conf->getmnctlconfig('enable') !== false)) {
         echo "Already disabled";
       }
@@ -560,18 +560,18 @@ function dmn_disable($dmnpid,$dmntodisable) {
       }
     }
     else {
-      echo "Unknown Dash MasterNode";
+      echo "Unknown Monoeci MasterNode";
     }
     echo "\n";
   }
 }
 
-// Set the enable flag to 1 in dash.conf to enable the Masternode
+// Set the enable flag to 1 in monoeci.conf to enable the Masternode
 function dmn_enable($dmnpid,$dmntoenable) {
   foreach ($dmntoenable as $uname) {
     echo "Enabling $uname: ";
     if (dmn_finduname($dmnpid,$uname)) {
-      $conf = new DashConfig($uname);
+      $conf = new MonoeciConfig($uname);
       if ($conf->getmnctlconfig('enable') == 1) {
         echo "Already enabled";
       }
@@ -586,7 +586,7 @@ function dmn_enable($dmnpid,$dmntoenable) {
       }
     }
     else {
-      echo "Unknown Dash MasterNode";
+      echo "Unknown Monoeci MasterNode";
     }
     echo "\n";
   }
@@ -633,7 +633,7 @@ function dmn_startstop($dmnpid,$todo,$testnet = false,$nodetype = 'masternode',$
     $uname = $node['uname'];
     $commands[] = array("status" => 0,
                         "nodenum" => $nodenum,
-                        "cmd" => "$uname $todo ".$node['dashd'].$extra,
+                        "cmd" => "$uname $todo ".$node['monoecid'].$extra,
                         "exitcode" => -1,
                         "output" => '');
   }
@@ -663,7 +663,7 @@ function dmn_startkeeprunning($dmnpid) {
     $uname = $node['uname'];
     $commands[] = array("status" => 0,
         "nodenum" => $nodenum,
-        "cmd" => "$uname start ".$node['dashd'],
+        "cmd" => "$uname start ".$node['monoecid'],
         "exitcode" => -1,
         "output" => '');
   }
@@ -703,13 +703,13 @@ function dmn_restartfrozen($dmnpid) {
       unlink("/tmp/dmnctl-NR-$uname-counter",$counter);
       $commands[] = array("status" => 0,
           "nodenum" => $nodenum,
-          "cmd" => "$uname stop " . $node['dashd'],
+          "cmd" => "$uname stop " . $node['monoecid'],
           "exitcode" => -1,
           "output" => '');
       if ($node["keeprunning"]) {
         $commands2[] = array("status" => 0,
             "nodenum" => $nodenum,
-            "cmd" => "$uname start " . $node['dashd'],
+            "cmd" => "$uname start " . $node['monoecid'],
             "exitcode" => -1,
             "output" => '');
         xechoToFile(DMN_NRCOUNTLOG,"Restarting unresponsive ".$uname);
@@ -1146,13 +1146,13 @@ function dmn_status($dmnpid,$istestnet) {
       }
 
       // Parse status
-      $dashdinfo = dmn_getstatus($dmnpidinfo['info'],$dmnpidinfo['blockhash']);
-      $blocks = $dashdinfo['blocks'];
-      $blockhash = $dashdinfo['blockhash'];
-      $connections = $dashdinfo['connections'];
-      $difficulty = $dashdinfo['difficulty'];
-      $protocol = $dashdinfo['protocol'];
-      $version = $dashdinfo['version'];
+      $monoecidinfo = dmn_getstatus($dmnpidinfo['info'],$dmnpidinfo['blockhash']);
+      $blocks = $monoecidinfo['blocks'];
+      $blockhash = $monoecidinfo['blockhash'];
+      $connections = $monoecidinfo['connections'];
+      $difficulty = $monoecidinfo['difficulty'];
+      $protocol = $monoecidinfo['protocol'];
+      $version = $monoecidinfo['version'];
 
       // Protocol
       //  Current protocol is the max protocol
@@ -1215,12 +1215,12 @@ function dmn_status($dmnpid,$istestnet) {
           $mnpose = $dmnpidinfo['mnpose'];
           $mnlist = $dmnpidinfo['mnlist'];
           $mncurrentip = $dmnpidinfo['mncurrent'];
-          $mncurrentlist[$uname] = $mncurrentip.":".$dashdinfo['testnet'];
+          $mncurrentlist[$uname] = $mncurrentip.":".$monoecidinfo['testnet'];
           foreach($dmnpidinfo['mnlastseen'] as $mnlsip => $data) {
-            $mnlastseen[$uname][$mnlsip.':'.$dashdinfo['testnet']] = $data;
+            $mnlastseen[$uname][$mnlsip.':'.$monoecidinfo['testnet']] = $data;
           }
           foreach($dmnpidinfo['mnactiveseconds'] as $mnlsip => $data) {
-            $mnactivesince[$uname][$mnlsip.':'.$dashdinfo['testnet']] = $data;
+            $mnactivesince[$uname][$mnlsip.':'.$monoecidinfo['testnet']] = $data;
           }
           $mndonationlist = $dmnpidinfo['mndonation'];
           $mnvoteslist = $dmnpidinfo['mnvotes'];
@@ -1241,29 +1241,29 @@ function dmn_status($dmnpid,$istestnet) {
             else {
               $active = $activetrue;
             }
-            $mnlistfinal["$ip:".$dashdinfo['testnet']][$uname] = array('Status' => $active,
+            $mnlistfinal["$ip:".$monoecidinfo['testnet']][$uname] = array('Status' => $active,
                                                                            'PoS' => $mnpose[$ip],
                                                                            'StatusEx' => $activetrue);
           }
           if (is_array($mnvoteslist) && (count($mnvoteslist)>0)) {
             foreach($mnvoteslist as $ip => $vote) {
-              $mnvoteslistfinal["$ip:".$dashdinfo['testnet']][$uname] = $vote;
+              $mnvoteslistfinal["$ip:".$monoecidinfo['testnet']][$uname] = $vote;
             }
           }
           foreach($mnpubkeylist as $data) {
-            $mnpubkeylistfinal[$data["ip"].":".$data["port"].":".$dashdinfo['testnet'].":".$data["pubkey"]] = array(
+            $mnpubkeylistfinal[$data["ip"].":".$data["port"].":".$monoecidinfo['testnet'].":".$data["pubkey"]] = array(
                      "MasternodeIP" => $data["ip"],
                      "MasternodePort" => $data["port"],
-                     "MNTestNet" => $dashdinfo['testnet'],
+                     "MNTestNet" => $monoecidinfo['testnet'],
                      "MNPubKey" => $data["pubkey"]
                 );
           }
           if (is_array($mndonationlist)) {
             foreach($mndonationlist as $donatedata) {
-              $mndonationlistfinal[$donatedata["ip"].":".$donatedata["port"].":".$dashdinfo['testnet'].":".$donatedata["pubkey"]] = array(
+              $mndonationlistfinal[$donatedata["ip"].":".$donatedata["port"].":".$monoecidinfo['testnet'].":".$donatedata["pubkey"]] = array(
                      "MasternodeIP" => $donatedata["ip"],
                      "MasternodePort" => $donatedata["port"],
-                     "MNTestNet" => $dashdinfo['testnet'],
+                     "MNTestNet" => $monoecidinfo['testnet'],
                      "MNPubKey" => $donatedata["pubkey"],
                      "MNDonationPercentage" => $donatedata["percent"]
                 );
@@ -1278,32 +1278,32 @@ function dmn_status($dmnpid,$istestnet) {
               // Parse masternode budgets proposals
               if (is_array($dmnpidinfo['mnbudgetshow'])) {
                   foreach ($dmnpidinfo['mnbudgetshow'] as $mnbudgetid => $mnbudgetdata) {
-                      if (array_key_exists($dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"], $mnbudgetshow)) {
-                          if (($mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["Yeas"]
-                                  + $mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["Nays"]
-                                  + $mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["Abstains"]) < ($mnbudgetdata["Yeas"] + $mnbudgetdata["Nays"] + $mnbudgetdata["Abstains"])
+                      if (array_key_exists($monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"], $mnbudgetshow)) {
+                          if (($mnbudgetshow[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["Yeas"]
+                                  + $mnbudgetshow[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["Nays"]
+                                  + $mnbudgetshow[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["Abstains"]) < ($mnbudgetdata["Yeas"] + $mnbudgetdata["Nays"] + $mnbudgetdata["Abstains"])
                           ) {
-                              $mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]] = $mnbudgetdata;
-                              $mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]['BudgetId'] = $mnbudgetid;
-                              $mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["BudgetTesnet"] = $dashdinfo['testnet'];
+                              $mnbudgetshow[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]] = $mnbudgetdata;
+                              $mnbudgetshow[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]['BudgetId'] = $mnbudgetid;
+                              $mnbudgetshow[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["BudgetTesnet"] = $monoecidinfo['testnet'];
                           }
                       } else {
-                          $mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]] = $mnbudgetdata;
-                          $mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]['BudgetId'] = $mnbudgetid;
-                          $mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["BudgetTesnet"] = $dashdinfo['testnet'];
+                          $mnbudgetshow[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]] = $mnbudgetdata;
+                          $mnbudgetshow[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]['BudgetId'] = $mnbudgetid;
+                          $mnbudgetshow[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["BudgetTesnet"] = $monoecidinfo['testnet'];
                       }
                       if (array_key_exists("mnbudget-getvotes-" . $mnbudgetid, $dmnpidinfo)) {
-                          if (!array_key_exists($mnbudgetid, $mnbudgetvotes[$dashdinfo['testnet']])) {
-                              $mnbudgetvotes[$dashdinfo['testnet']][$mnbudgetid] = array();
+                          if (!array_key_exists($mnbudgetid, $mnbudgetvotes[$monoecidinfo['testnet']])) {
+                              $mnbudgetvotes[$monoecidinfo['testnet']][$mnbudgetid] = array();
                           }
                           if (is_array($dmnpidinfo["mnbudget-getvotes-" . $mnbudgetid])) {
                               foreach ($dmnpidinfo["mnbudget-getvotes-" . $mnbudgetid] as $mnbudgetvotehash => $mnbudgetvotedata) {
-                                  if (array_key_exists($mnbudgetvotehash, $mnbudgetvotes[$dashdinfo['testnet']][$mnbudgetid])) {
-                                      if ($mnbudgetvotes[$dashdinfo['testnet']][$mnbudgetid][$mnbudgetvotehash]["nTime"] < $mnbudgetvotedata["nTime"]) {
-                                          $mnbudgetvotes[$dashdinfo['testnet']][$mnbudgetid][$mnbudgetvotehash] = $mnbudgetvotedata;
+                                  if (array_key_exists($mnbudgetvotehash, $mnbudgetvotes[$monoecidinfo['testnet']][$mnbudgetid])) {
+                                      if ($mnbudgetvotes[$monoecidinfo['testnet']][$mnbudgetid][$mnbudgetvotehash]["nTime"] < $mnbudgetvotedata["nTime"]) {
+                                          $mnbudgetvotes[$monoecidinfo['testnet']][$mnbudgetid][$mnbudgetvotehash] = $mnbudgetvotedata;
                                       }
                                   } else {
-                                      $mnbudgetvotes[$dashdinfo['testnet']][$mnbudgetid][$mnbudgetvotehash] = $mnbudgetvotedata;
+                                      $mnbudgetvotes[$monoecidinfo['testnet']][$mnbudgetid][$mnbudgetvotehash] = $mnbudgetvotedata;
                                   }
                               }
                           }
@@ -1315,19 +1315,19 @@ function dmn_status($dmnpid,$istestnet) {
               if (is_array($dmnpidinfo['mnbudgetprojection'])) {
                   foreach ($dmnpidinfo['mnbudgetprojection'] as $mnbudgetid => $mnbudgetdata) {
                       if (is_array($mnbudgetdata) && array_key_exists("Yeas", $mnbudgetdata) && array_key_exists("Nays", $mnbudgetdata) && array_key_exists("Abstains", $mnbudgetdata)) {
-                          if (array_key_exists($mnbudgetdata["Hash"], $mnbudgetprojection[$dashdinfo['testnet']])) {
-                              if (($mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]]["Yeas"]
-                                      + $mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]]["Nays"]
-                                      + $mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]]["Abstains"]) < ($mnbudgetdata["Yeas"] + $mnbudgetdata["Nays"] + $mnbudgetdata["Abstains"])
+                          if (array_key_exists($mnbudgetdata["Hash"], $mnbudgetprojection[$monoecidinfo['testnet']])) {
+                              if (($mnbudgetprojection[$monoecidinfo['testnet']][$mnbudgetdata["Hash"]]["Yeas"]
+                                      + $mnbudgetprojection[$monoecidinfo['testnet']][$mnbudgetdata["Hash"]]["Nays"]
+                                      + $mnbudgetprojection[$monoecidinfo['testnet']][$mnbudgetdata["Hash"]]["Abstains"]) < ($mnbudgetdata["Yeas"] + $mnbudgetdata["Nays"] + $mnbudgetdata["Abstains"])
                               ) {
-                                  $mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]] = $mnbudgetdata;
-                                  $mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]]['BudgetId'] = $mnbudgetid;
-                                  $mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]]["BudgetTesnet"] = $dashdinfo['testnet'];
+                                  $mnbudgetprojection[$monoecidinfo['testnet']][$mnbudgetdata["Hash"]] = $mnbudgetdata;
+                                  $mnbudgetprojection[$monoecidinfo['testnet']][$mnbudgetdata["Hash"]]['BudgetId'] = $mnbudgetid;
+                                  $mnbudgetprojection[$monoecidinfo['testnet']][$mnbudgetdata["Hash"]]["BudgetTesnet"] = $monoecidinfo['testnet'];
                               }
                           } else {
-                              $mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]] = $mnbudgetdata;
-                              $mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]]['BudgetId'] = $mnbudgetid;
-                              $mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]]["BudgetTesnet"] = $dashdinfo['testnet'];
+                              $mnbudgetprojection[$monoecidinfo['testnet']][$mnbudgetdata["Hash"]] = $mnbudgetdata;
+                              $mnbudgetprojection[$monoecidinfo['testnet']][$mnbudgetdata["Hash"]]['BudgetId'] = $mnbudgetid;
+                              $mnbudgetprojection[$monoecidinfo['testnet']][$mnbudgetdata["Hash"]]["BudgetTesnet"] = $monoecidinfo['testnet'];
                           }
                       }
                   }
@@ -1336,18 +1336,18 @@ function dmn_status($dmnpid,$istestnet) {
               // Parse masternode final budget
               if (is_array($dmnpidinfo['mnbudgetfinal'])) {
                   foreach ($dmnpidinfo['mnbudgetfinal'] as $mnbudgetid => $mnbudgetdata) {
-                      if (array_key_exists($dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"], $mnbudgetfinal) &&
-                          array_key_exists("VoteCount", $mnbudgetfinal[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]])
+                      if (array_key_exists($monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"], $mnbudgetfinal) &&
+                          array_key_exists("VoteCount", $mnbudgetfinal[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]])
                       ) {
-                          if (($mnbudgetfinal[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["VoteCount"]) < ($mnbudgetdata["VoteCount"])) {
-                              $mnbudgetfinal[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]] = $mnbudgetdata;
-                              $mnbudgetfinal[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]['BudgetName'] = $mnbudgetid;
-                              $mnbudgetfinal[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["BudgetTesnet"] = $dashdinfo['testnet'];
+                          if (($mnbudgetfinal[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["VoteCount"]) < ($mnbudgetdata["VoteCount"])) {
+                              $mnbudgetfinal[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]] = $mnbudgetdata;
+                              $mnbudgetfinal[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]['BudgetName'] = $mnbudgetid;
+                              $mnbudgetfinal[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["BudgetTesnet"] = $monoecidinfo['testnet'];
                           }
                       } else {
-                          $mnbudgetfinal[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]] = $mnbudgetdata;
-                          $mnbudgetfinal[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]['BudgetName'] = $mnbudgetid;
-                          $mnbudgetfinal[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["BudgetTesnet"] = $dashdinfo['testnet'];
+                          $mnbudgetfinal[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]] = $mnbudgetdata;
+                          $mnbudgetfinal[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]['BudgetName'] = $mnbudgetid;
+                          $mnbudgetfinal[$monoecidinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["BudgetTesnet"] = $monoecidinfo['testnet'];
                       }
                   }
               }
@@ -1355,31 +1355,31 @@ function dmn_status($dmnpid,$istestnet) {
           // gobject proposals and triggers handling (4) [v12.1]
           elseif ($dmnpidinfo['versionhandling'] == 4) {
               // Store the next superblock
-              if (($governancenextsb[$dashdinfo['testnet']] === false) || ($governancenextsb[$dashdinfo['testnet']] > intval($dmnpidinfo['getgovernanceinfo']['nextsuperblock']))) {
-                $governancenextsb[$dashdinfo['testnet']] = intval($dmnpidinfo['getgovernanceinfo']['nextsuperblock']);
+              if (($governancenextsb[$monoecidinfo['testnet']] === false) || ($governancenextsb[$monoecidinfo['testnet']] > intval($dmnpidinfo['getgovernanceinfo']['nextsuperblock']))) {
+                $governancenextsb[$monoecidinfo['testnet']] = intval($dmnpidinfo['getgovernanceinfo']['nextsuperblock']);
               }
               // Store the budget available in next superblock
-              if (($governancebudget[$dashdinfo['testnet']] === false) || ($governancebudget[$dashdinfo['testnet']] > floatval($dmnpidinfo['getsuperblockbudget']))) {
-                $governancebudget[$dashdinfo['testnet']] = floatval($dmnpidinfo['getsuperblockbudget']);
+              if (($governancebudget[$monoecidinfo['testnet']] === false) || ($governancebudget[$monoecidinfo['testnet']] > floatval($dmnpidinfo['getsuperblockbudget']))) {
+                $governancebudget[$monoecidinfo['testnet']] = floatval($dmnpidinfo['getsuperblockbudget']);
               }
               // Parse proposals
               if (is_array($dmnpidinfo["gobjectlist"]) && is_array($dmnpidinfo["gobjectlist"]["proposals"])) {
                   foreach ($dmnpidinfo["gobjectlist"]["proposals"] as $proposaldata) {
-                      if (array_key_exists($dashdinfo['testnet'] . "-" . $proposaldata["hash"], $gobjectproposallist)) {
-                          if (($gobjectproposallist[$dashdinfo['testnet'] . "-" . $proposaldata["hash"]]["gobject"]["YesCount"]
-                             + $gobjectproposallist[$dashdinfo['testnet'] . "-" . $proposaldata["hash"]]["gobject"]["NoCount"]
-                             + $gobjectproposallist[$dashdinfo['testnet'] . "-" . $proposaldata["hash"]]["gobject"]["AbstainCount"]) < ($proposaldata["gobject"]["YesCount"] + $proposaldata["gobject"]["NoCount"] + $proposaldata["gobject"]["AbstainCount"])
+                      if (array_key_exists($monoecidinfo['testnet'] . "-" . $proposaldata["hash"], $gobjectproposallist)) {
+                          if (($gobjectproposallist[$monoecidinfo['testnet'] . "-" . $proposaldata["hash"]]["gobject"]["YesCount"]
+                             + $gobjectproposallist[$monoecidinfo['testnet'] . "-" . $proposaldata["hash"]]["gobject"]["NoCount"]
+                             + $gobjectproposallist[$monoecidinfo['testnet'] . "-" . $proposaldata["hash"]]["gobject"]["AbstainCount"]) < ($proposaldata["gobject"]["YesCount"] + $proposaldata["gobject"]["NoCount"] + $proposaldata["gobject"]["AbstainCount"])
                           ) {
-                              $gobjectproposallist[$dashdinfo['testnet'] . "-" . $proposaldata["hash"]] = $proposaldata;
-                              $gobjectproposallist[$dashdinfo['testnet'] . "-" . $proposaldata["hash"]]["Testnet"] = $dashdinfo['testnet'];
+                              $gobjectproposallist[$monoecidinfo['testnet'] . "-" . $proposaldata["hash"]] = $proposaldata;
+                              $gobjectproposallist[$monoecidinfo['testnet'] . "-" . $proposaldata["hash"]]["Testnet"] = $monoecidinfo['testnet'];
                           }
                       } else {
-                          $gobjectproposallist[$dashdinfo['testnet'] . "-" . $proposaldata["hash"]] = $proposaldata;
-                          $gobjectproposallist[$dashdinfo['testnet'] . "-" . $proposaldata["hash"]]["Testnet"] = $dashdinfo['testnet'];
+                          $gobjectproposallist[$monoecidinfo['testnet'] . "-" . $proposaldata["hash"]] = $proposaldata;
+                          $gobjectproposallist[$monoecidinfo['testnet'] . "-" . $proposaldata["hash"]]["Testnet"] = $monoecidinfo['testnet'];
                       }
                       if (array_key_exists("gobject-getvotes-" . $proposaldata["hash"], $dmnpidinfo)) {
-                          if (!array_key_exists($proposaldata["hash"], $gobjectvotes[$dashdinfo['testnet']])) {
-                              $gobjectvotes[$dashdinfo['testnet']][$proposaldata["hash"]] = array();
+                          if (!array_key_exists($proposaldata["hash"], $gobjectvotes[$monoecidinfo['testnet']])) {
+                              $gobjectvotes[$monoecidinfo['testnet']][$proposaldata["hash"]] = array();
                           }
                           if (is_array($dmnpidinfo["gobject-getvotes-" . $proposaldata["hash"]])) {
                               foreach ($dmnpidinfo["gobject-getvotes-" . $proposaldata["hash"]] as $gobjectvotehash => $gobjectvotedata) {
@@ -1388,16 +1388,16 @@ function dmn_status($dmnpid,$istestnet) {
                                   if ((substr($collateral,0,16) == "CTxIn(COutPoint(") && (substr($collateral,-14) == "), scriptSig=)")) {
                                       $collateral = substr($collateral, 16, strlen($collateral) - 30);
                                       list($mnoutputhash, $mnoutputindex) = explode(", ", $collateral);
-                                      if (array_key_exists($mnoutputhash."-".$mnoutputindex, $gobjectvotes[$dashdinfo['testnet']][$proposaldata["hash"]])) {
-                                          if ($gobjectvotes[$dashdinfo['testnet']][$proposaldata["hash"]][$mnoutputhash."-".$mnoutputindex]["nTime"] < $ntime) {
-                                              $gobjectvotes[$dashdinfo['testnet']][$proposaldata["hash"]][$mnoutputhash."-".$mnoutputindex] = array("MasternodeOutputHash" => $mnoutputhash,
+                                      if (array_key_exists($mnoutputhash."-".$mnoutputindex, $gobjectvotes[$monoecidinfo['testnet']][$proposaldata["hash"]])) {
+                                          if ($gobjectvotes[$monoecidinfo['testnet']][$proposaldata["hash"]][$mnoutputhash."-".$mnoutputindex]["nTime"] < $ntime) {
+                                              $gobjectvotes[$monoecidinfo['testnet']][$proposaldata["hash"]][$mnoutputhash."-".$mnoutputindex] = array("MasternodeOutputHash" => $mnoutputhash,
                                                   "MasternodeOutputIndex" => intval($mnoutputindex),
                                                   "VoteHash" => $gobjectvotehash,
                                                   "nTime" => intval($ntime),
                                                   "Vote" => $vote);
                                           }
                                       } else {
-                                          $gobjectvotes[$dashdinfo['testnet']][$proposaldata["hash"]][$mnoutputhash."-".$mnoutputindex] = array("MasternodeOutputHash" => $mnoutputhash,
+                                          $gobjectvotes[$monoecidinfo['testnet']][$proposaldata["hash"]][$mnoutputhash."-".$mnoutputindex] = array("MasternodeOutputHash" => $mnoutputhash,
                                               "MasternodeOutputIndex" => intval($mnoutputindex),
                                               "VoteHash" => $gobjectvotehash,
                                               "nTime" => intval($ntime),
@@ -1413,22 +1413,22 @@ function dmn_status($dmnpid,$istestnet) {
               }
               if (is_array($dmnpidinfo["gobjectlist"]) && is_array($dmnpidinfo["gobjectlist"]["triggers"])) {
                   foreach ($dmnpidinfo["gobjectlist"]["triggers"] as $triggerdata) {
-                      if (array_key_exists($dashdinfo['testnet'] . "-" . $triggerdata["hash"], $gobjecttriggerlist)) {
-                          if (($gobjecttriggerlist[$dashdinfo['testnet'] . "-" . $triggerdata["hash"]]["gobject"]["YesCount"]
-                                  + $gobjecttriggerlist[$dashdinfo['testnet'] . "-" . $triggerdata["hash"]]["gobject"]["NoCount"]
-                                  + $gobjecttriggerlist[$dashdinfo['testnet'] . "-" . $triggerdata["hash"]]["gobject"]["AbstainCount"]) < ($triggerdata["gobject"]["YesCount"] + $triggerdata["gobject"]["NoCount"] + $triggerdata["gobject"]["AbstainCount"])
+                      if (array_key_exists($monoecidinfo['testnet'] . "-" . $triggerdata["hash"], $gobjecttriggerlist)) {
+                          if (($gobjecttriggerlist[$monoecidinfo['testnet'] . "-" . $triggerdata["hash"]]["gobject"]["YesCount"]
+                                  + $gobjecttriggerlist[$monoecidinfo['testnet'] . "-" . $triggerdata["hash"]]["gobject"]["NoCount"]
+                                  + $gobjecttriggerlist[$monoecidinfo['testnet'] . "-" . $triggerdata["hash"]]["gobject"]["AbstainCount"]) < ($triggerdata["gobject"]["YesCount"] + $triggerdata["gobject"]["NoCount"] + $triggerdata["gobject"]["AbstainCount"])
                           ) {
-                              $gobjecttriggerlist[$dashdinfo['testnet'] . "-" . $triggerdata["hash"]] = $triggerdata;
-                              $gobjecttriggerlist[$dashdinfo['testnet'] . "-" . $triggerdata["hash"]]["Testnet"] = $dashdinfo['testnet'];
+                              $gobjecttriggerlist[$monoecidinfo['testnet'] . "-" . $triggerdata["hash"]] = $triggerdata;
+                              $gobjecttriggerlist[$monoecidinfo['testnet'] . "-" . $triggerdata["hash"]]["Testnet"] = $monoecidinfo['testnet'];
 
                           }
                       } else {
-                          $gobjecttriggerlist[$dashdinfo['testnet'] . "-" . $triggerdata["hash"]] = $triggerdata;
-                          $gobjecttriggerlist[$dashdinfo['testnet'] . "-" . $triggerdata["hash"]]["Testnet"] = $dashdinfo['testnet'];
+                          $gobjecttriggerlist[$monoecidinfo['testnet'] . "-" . $triggerdata["hash"]] = $triggerdata;
+                          $gobjecttriggerlist[$monoecidinfo['testnet'] . "-" . $triggerdata["hash"]]["Testnet"] = $monoecidinfo['testnet'];
                       }
                       if (array_key_exists("gobject-getvotes-" . $triggerdata["hash"], $dmnpidinfo)) {
-                          if (!array_key_exists($triggerdata["hash"], $gobjectvotes[$dashdinfo['testnet']])) {
-                              $gobjectvotes[$dashdinfo['testnet']][$triggerdata["hash"]] = array();
+                          if (!array_key_exists($triggerdata["hash"], $gobjectvotes[$monoecidinfo['testnet']])) {
+                              $gobjectvotes[$monoecidinfo['testnet']][$triggerdata["hash"]] = array();
                           }
                           if (is_array($dmnpidinfo["gobject-getvotes-" . $triggerdata["hash"]])) {
                               foreach ($dmnpidinfo["gobject-getvotes-" . $triggerdata["hash"]] as $gobjectvotehash => $gobjectvotedata) {
@@ -1437,16 +1437,16 @@ function dmn_status($dmnpid,$istestnet) {
                                       if ((substr($collateral,0,16) == "CTxIn(COutPoint(") && (substr($collateral,-14) == "), scriptSig=)")) {
                                           $collateral = substr($collateral, 16, strlen($collateral) - 30);
                                           list($mnoutputhash, $mnoutputindex) = explode(", ", $collateral);
-                                          if (array_key_exists($mnoutputhash."-".$mnoutputindex, $gobjectvotes[$dashdinfo['testnet']][$triggerdata["hash"]])) {
-                                              if ($gobjectvotes[$dashdinfo['testnet']][$triggerdata["hash"]][$mnoutputhash."-".$mnoutputindex]["nTime"] < $ntime) {
-                                                  $gobjectvotes[$dashdinfo['testnet']][$triggerdata["hash"]][$mnoutputhash."-".$mnoutputindex] = array("MasternodeOutputHash" => $mnoutputhash,
+                                          if (array_key_exists($mnoutputhash."-".$mnoutputindex, $gobjectvotes[$monoecidinfo['testnet']][$triggerdata["hash"]])) {
+                                              if ($gobjectvotes[$monoecidinfo['testnet']][$triggerdata["hash"]][$mnoutputhash."-".$mnoutputindex]["nTime"] < $ntime) {
+                                                  $gobjectvotes[$monoecidinfo['testnet']][$triggerdata["hash"]][$mnoutputhash."-".$mnoutputindex] = array("MasternodeOutputHash" => $mnoutputhash,
                                                       "MasternodeOutputIndex" => intval($mnoutputindex),
                                                       "VoteHash" => $gobjectvotehash,
                                                       "nTime" => intval($ntime),
                                                       "Vote" => $vote);
                                               }
                                           } else {
-                                              $gobjectvotes[$dashdinfo['testnet']][$triggerdata["hash"]][$mnoutputhash."-".$mnoutputindex] = array("MasternodeOutputHash" => $mnoutputhash,
+                                              $gobjectvotes[$monoecidinfo['testnet']][$triggerdata["hash"]][$mnoutputhash."-".$mnoutputindex] = array("MasternodeOutputHash" => $mnoutputhash,
                                                   "MasternodeOutputIndex" => intval($mnoutputindex),
                                                   "VoteHash" => $gobjectvotehash,
                                                   "nTime" => intval($ntime),
@@ -1495,19 +1495,19 @@ function dmn_status($dmnpid,$istestnet) {
               list($mn3ip, $mn3port) = $test;
             }
 
-            if (array_key_exists($mn3output."-".$dashdinfo['testnet'],$mninfo2)) {
-              if ($mn3lastseen < $mninfo2[$mn3output."-".$dashdinfo['testnet']]["MasternodeLastSeen"]) {
-                $mninfo2[$mn3output."-".$dashdinfo['testnet']]["MasternodeLastSeen"] = intval($mn3lastseen);
+            if (array_key_exists($mn3output."-".$monoecidinfo['testnet'],$mninfo2)) {
+              if ($mn3lastseen < $mninfo2[$mn3output."-".$monoecidinfo['testnet']]["MasternodeLastSeen"]) {
+                $mninfo2[$mn3output."-".$monoecidinfo['testnet']]["MasternodeLastSeen"] = intval($mn3lastseen);
               }
-              if ($mn3activeseconds < $mninfo2[$mn3output."-".$dashdinfo['testnet']]["MasternodeActiveSeconds"]) {
-                $mninfo2[$mn3output."-".$dashdinfo['testnet']]["MasternodeActiveSeconds"] = intval($mn3activeseconds);
+              if ($mn3activeseconds < $mninfo2[$mn3output."-".$monoecidinfo['testnet']]["MasternodeActiveSeconds"]) {
+                $mninfo2[$mn3output."-".$monoecidinfo['testnet']]["MasternodeActiveSeconds"] = intval($mn3activeseconds);
               }
-              if ($mn3lastpaid > $mninfo2[$mn3output."-".$dashdinfo['testnet']]["MasternodeLastPaid"]) {
-                $mninfo2[$mn3output."-".$dashdinfo['testnet']]["MasternodeLastPaid"] = intval($mn3lastpaid);
+              if ($mn3lastpaid > $mninfo2[$mn3output."-".$monoecidinfo['testnet']]["MasternodeLastPaid"]) {
+                $mninfo2[$mn3output."-".$monoecidinfo['testnet']]["MasternodeLastPaid"] = intval($mn3lastpaid);
               }
             }
             else {
-              $mninfo2[$mn3output."-".$dashdinfo['testnet']] = array("MasternodeProtocol" => intval($mn3protocol),
+              $mninfo2[$mn3output."-".$monoecidinfo['testnet']] = array("MasternodeProtocol" => intval($mn3protocol),
                                                                          "MasternodePubkey" => $mn3pubkey,
                                                                          "MasternodeIP" => $mn3ip,
                                                                          "MasternodePort" => $mn3port,
@@ -1525,7 +1525,7 @@ function dmn_status($dmnpid,$istestnet) {
               echo "\nWARNING: ".$mn3output." - Unknown StatusEx: [".$mn3status."] ";
               $mn3status = "__UNKNOWN__";
             }
-            $mnlist2final[$mn3output."-".$dashdinfo['testnet']][$uname] = array('Status' => $active,
+            $mnlist2final[$mn3output."-".$monoecidinfo['testnet']][$uname] = array('Status' => $active,
                                                                                     'StatusEx' => $mn3status);
           }
         }
@@ -1625,13 +1625,13 @@ function dmn_status($dmnpid,$istestnet) {
   $mncount = $mncountinactive+$mncountactive;
   if (count($mnlistfinal) > 0) {
     ksort($mnlistfinal,SORT_NATURAL);
-    $estpayoutdaily = round(dmn_getpayout($mncountactive,$dashdinfo['difficulty']),2);
+    $estpayoutdaily = round(dmn_getpayout($mncountactive,$monoecidinfo['difficulty']),2);
   }
   else {
     $estpayoutdaily = '???';
   }
 
-//  echo "Total Masternodes: $mncount/$mncountinactive    Est.Payout: $estpayoutdaily DASH/day (diff=$difficultyfinal)\n";
+//  echo "Total Masternodes: $mncount/$mncountinactive    Est.Payout: $estpayoutdaily MONOECI/day (diff=$difficultyfinal)\n";
 
   if (count($wsstatus)>0) {
     $wsmninfo = array();
@@ -2007,7 +2007,7 @@ function dmn_status($dmnpid,$istestnet) {
 $lastrefresh = gmdate('Y-m-d H:i:s');
 $starttime = microtime(true);
 
-xecho("Dash Ninja Control [dmnctl] v".DMN_VERSION." (".date('Y-m-d H:i:s',filemtime(__FILE__)).")\n");
+xecho("Monoeci Ninja Control [dmnctl] v".DMN_VERSION." (".date('Y-m-d H:i:s',filemtime(__FILE__)).")\n");
 
 if ($argc > 1) {
   $istestnet = 0;

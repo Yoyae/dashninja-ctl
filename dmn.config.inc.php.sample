@@ -1,21 +1,21 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-ctl
+    This file is part of Monoeci Ninja.
+    https://github.com/Yoyae/monoecininja-ctl
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    Monoeci Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    Monoeci Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with Monoeci Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
@@ -36,8 +36,8 @@ DEFINE('DMN_PID_PREFIX','dmn');
 //  Regex for masternode usernames
 DEFINE('DMN_PID_REGEX',"/dmn(\d\d*)/");
 
-// Default path to dashd
-DEFINE('DMN_DASHD_DEFAULT','/usr/local/bin/dashd');
+// Default path to monoecid
+DEFINE('DMN_MONOECID_DEFAULT','/usr/local/bin/monoecid');
 
 // How much to wait for start/stop before giving up (in seconds)
 DEFINE('DMN_STOPWAIT',10);
@@ -74,9 +74,9 @@ DEFINE('DMN_BALANCE_SEMAPHORE','/var/run/dmnbalance.pid');
 //  Interval between balance retrieval for a pubkey (in seconds)
 DEFINE('DMN_BALANCE_INTERVAL',900);
 //  URL for testnet balance retrieval (abe explorer API)
-DEFINE('DMN_BALANCE_URL_TESTNET','http://127.0.0.1:17890/chain/Dash/q/addressbalance/%%p%%');
+DEFINE('DMN_BALANCE_URL_TESTNET','http://127.0.0.1:17890/chain/Monoeci/q/addressbalance/%%p%%');
 //  URL for mainnet balance retrieval (abe explorer API)
-DEFINE('DMN_BALANCE_URL_MAINNET','http://127.0.0.1:7890/chain/Dash/q/addressbalance/%%p%%');
+DEFINE('DMN_BALANCE_URL_MAINNET','http://127.0.0.1:7890/chain/Monoeci/q/addressbalance/%%p%%');
 
 // Block Parser specifics
 //  Semaphore file (only allow 1 instance)
@@ -84,32 +84,32 @@ DEFINE('DMN_BLOCKPARSER_SEMAPHORE','/var/run/dmnblockparser.pid');
 //  Activate archival (if disabled files are deleted once consumed)
 DEFINE('DMN_BLOCKPARSER_ARCHIVE_DO',false);
 //  Folder to archive json files (username subfolders will be created)
-DEFINE('DMN_BLOCKPARSER_ARCHIVE','/home/dash-blkhist/archive/current/');
+DEFINE('DMN_BLOCKPARSER_ARCHIVE','/home/monoeci-blkhist/archive/current/');
 //  Folder to archive longterm (multiple json files together per username)
-DEFINE('DMN_BLOCKPARSER_ARCHIVE_LONGTERM','/home/dash-blkhist/archive/longterm/');
+DEFINE('DMN_BLOCKPARSER_ARCHIVE_LONGTERM','/home/monoeci-blkhist/archive/longterm/');
 //  Minimum number of files to tar together for longterm archiving
 DEFINE('DMN_BLOCKPARSER_ARCHIVE_LONGTERM_MIN',576);
 
 // Third parties fetching configuration
-//  Dash Whale partner ID
-DEFINE('DMN_DASHWHALE_PARTNERID', '000000000000');
+//  Monoeci Whale partner ID
+DEFINE('DMN_MONOECIWHALE_PARTNERID', '000000000000');
 
 // Auto-Update URLs
-//  Testnet binary (Bamboo DASH server)
-DEFINE('DMN_AUTOUPDATE_TEST','https://bamboo.dash.org/artifact/DASHL-DEV/JOB1/build-latestSuccessful/gitian-linux-dash-dist/dashcore-0.12.2-linux64.tar.gz');
+//  Testnet binary (Bamboo MONOECI server) TODO
+DEFINE('DMN_AUTOUPDATE_TEST','https://bamboo.monoeci.org/artifact/MONOECIL-DEV/JOB1/build-latestSuccessful/gitian-linux-monoeci-dist/monoecicore-0.12.2-linux64.tar.gz');
 //  Semaphore
 DEFINE('DMN_AUTOUPDATE_SEMAPHORE','/var/run/dmnautoupdate.pid');
 
 // Command Download specifics
 //  Download folder
-DEFINE('DMN_CDL_DIR','/var/www/dash/download/');
+DEFINE('DMN_CDL_DIR','/var/www/monoeci/download/');
 //  Download URL
 DEFINE('DMN_CDL_URL','https://cdl.yourdomain.tk/');
 
 // Direct access to DB (should not be used)
-DEFINE('DMNCTLMYSQLUSER','dash-mnninja-com');
+DEFINE('DMNCTLMYSQLUSER','monoeci-mnninja-com');
 DEFINE('DMNCTLMYSQLPASS','yourrandompassword');
-DEFINE('DMNCTLMYSQLDATABASE','dash_ninja');
+DEFINE('DMNCTLMYSQLDATABASE','monoeci_ninja');
 DEFINE('DMNCTLMYSQLHOST','localhost');
 
 // Webservice configuration
@@ -118,7 +118,7 @@ define('DMN_URL_API','https://yourdomain.tk/api');
 //  Private API end-point
 define('DMN_URL_CMD','https://cmd.yourdomain.tk');
 //  Private API SSL configuration (you need a CA, certificate and private key for this hub client)
-define('DMN_SSL_CAINFO','/usr/share/ca-certificates/yourdomain.tk/DashNinja_CA_Root.crt');
+define('DMN_SSL_CAINFO','/usr/share/ca-certificates/yourdomain.tk/MonoeciNinja_CA_Root.crt');
 define('DMN_SSL_CERT','/etc/ssl/private/hub01.cmd.yourdomain.tk.crt');
 define('DMN_SSL_KEY','/etc/ssl/private/hub01.cmd.yourdomain.tk.key');
 //  Private API interface to use

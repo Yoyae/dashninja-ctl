@@ -2,38 +2,38 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-ctl
+    This file is part of Monoeci Ninja.
+    https://github.com/Yoyae/monoecininja-ctl
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    Monoeci Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    Monoeci Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with Monoeci Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
 DEFINE('DMN_SCRIPT',true);
 
-require_once('EasyDash-PHP/easydash.php');
-require_once('DashConfig.class.php');
+require_once('EasyMonoeci-PHP/easymonoeci.php');
+require_once('MonoeciConfig.class.php');
 require_once('dmn.config.inc.php');
-require_once('dashblocknotify.config.inc.php');
+require_once('monoeciblocknotify.config.inc.php');
 
-define('DASHBLOCKRETRIEVE','0.2.1-beta');
+define('MONOECIBLOCKRETRIEVE','0.2.1-beta');
 
 function xecho($line) {
   echo date('Y-m-d H:i:s').' - '.$line;
 }
 
-xecho('DashNinja.pl Block Retrieve v'.DASHBLOCKRETRIEVE."\n");
+xecho('MonoeciNinja.pl Block Retrieve v'.MONOECIBLOCKRETRIEVE."\n");
 if (($argc < 3) || ($argc > 5)) {
   echo 'Usage: '.basename($argv[0]).' uname blockid [blockidto] [forcearchive]'."\n";
   die(1);
@@ -61,8 +61,8 @@ else {
 xecho("Block retrieval from $uname (from $blockidfrom to $blockidto), retrieving RPC configuration: ");
 
 if (isset($unamelist) && is_array($unamelist) && array_key_exists($uname,$unamelist)) {
-  $config = new DashConfig($uname);
-  $rpc = new \elbereth\EasyDash($config->getconfig('rpcuser'),$config->getconfig('rpcpassword'),'localhost',$config->getconfig('rpcport'));
+  $config = new MonoeciConfig($uname);
+  $rpc = new \Yoyae\EasyMonoeci($config->getconfig('rpcuser'),$config->getconfig('rpcpassword'),'localhost',$config->getconfig('rpcport'));
   echo "OK\n";
 }
 else {

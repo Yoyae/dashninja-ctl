@@ -1,21 +1,21 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-ctl
+    This file is part of Monoeci Ninja.
+    https://github.com/Yoyae/monoecininja-ctl
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    Monoeci Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    Monoeci Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with Monoeci Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
@@ -25,7 +25,7 @@
 
   define('DMN_VERSION_CTLRPC','1.0.0');
 
-  xecho('DASH Ninja Control RPC Client v'.DMN_VERSION_CTLRPC."\n");
+  xecho('MONOECI Ninja Control RPC Client v'.DMN_VERSION_CTLRPC."\n");
 
   if ($argc != 4) {
     xecho("Usage: ".basename($argv[0])." uname rpccommand outputfile\n");
@@ -36,8 +36,8 @@
   $rpccommand = $argv[2];
   $outputfile = $argv[3];
   $nodepath1 = DMN_PID_PATH.$uname.'/.darkcoin/';
-$nodepath2 = DMN_PID_PATH.$uname.'/.dash/';
-$nodepath3 = DMN_PID_PATH.$uname.'/.dashcore/';
+$nodepath2 = DMN_PID_PATH.$uname.'/.monoeci/';
+$nodepath3 = DMN_PID_PATH.$uname.'/.monoecicore/';
 
   if (is_dir($nodepath1)) {
     $nodepath = $nodepath1;
@@ -58,7 +58,7 @@ $nodepath3 = DMN_PID_PATH.$uname.'/.dashcore/';
   }
 
   xecho("Loading configuration for $uname: ");
-  $conf = new DashConfig($uname);
+  $conf = new MonoeciConfig($uname);
   if ($conf->isConfigLoaded()) {
     echo "OK\n";
   }
@@ -68,7 +68,7 @@ $nodepath3 = DMN_PID_PATH.$uname.'/.dashcore/';
   }
 
   xecho("Executing RPC command '$rpccommand': ");
-  $rpc = new \elbereth\EasyDash($conf->getconfig('rpcuser'),$conf->getconfig('rpcpassword'),'localhost',$conf->getconfig('rpcport'));
+  $rpc = new \Yoyae\EasyMonoeci($conf->getconfig('rpcuser'),$conf->getconfig('rpcpassword'),'localhost',$conf->getconfig('rpcport'));
 
   $rpclist = explode(' ',$rpccommand);
   $rpcparams = array();

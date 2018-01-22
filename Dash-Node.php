@@ -1,31 +1,31 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-ctl
+    This file is part of Monoeci Ninja.
+    https://github.com/Yoyae/monoecininja-ctl
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    Monoeci Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    Monoeci Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with Monoeci Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
-namespace Dash;
+namespace Monoeci;
 
 use Exception;
 
 define('PROTOCOL_VERSION',70103);
 define('PROTOCOL_MAGIC',"\xbf\x0c\x6b\xbd");
-define('HRVERSION',"/Dash Core:%s/Dash Ninja Port Checker:%s.%d/");
+define('HRVERSION',"/Monoeci Core:%s/Monoeci Ninja Port Checker:%s.%d/");
 define('THISVERSION',4);
 
 function strToHex($string){
@@ -42,7 +42,7 @@ class EUnexpectedPacketType extends Exception {}
 class EFailedToReadFromPeer extends Exception {}
 class EUnexpectedFragmentation extends Exception {}
 
-// Connect to P2P port of dashd
+// Connect to P2P port of monoecid
 // Based on code found on internet for Bitcoin (don't remember the source sorry)
 class Node {
 	private $sock;

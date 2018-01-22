@@ -1,28 +1,28 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-ctl
+    This file is part of Monoeci Ninja.
+    https://github.com/Yoyae/monoecininja-ctl
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    Monoeci Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    Monoeci Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with Monoeci Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
-// Deal with dash.conf configuration (read/write)
-class DashConfig {
+// Deal with monoeci.conf configuration (read/write)
+class MonoeciConfig {
 
-  // Normal dash.conf configuration
+  // Normal monoeci.conf configuration
   private $config;
 
   // Masternode Control configuration
@@ -43,15 +43,15 @@ class DashConfig {
     if (file_exists($this->configfilename)) {
       $rawconf = file_get_contents($this->configfilename);
       $conf = explode("\n",trim($rawconf));
-      $magiclen = strlen(DashConfig::MAGIC);
+      $magiclen = strlen(MonoeciConfig::MAGIC);
       for ($x = 0; $x < count($conf); $x++) {
-        if ((substr($conf[$x],0,1) == '#') && (substr($conf[$x],0,$magiclen) != DashConfig::MAGIC)) {
+        if ((substr($conf[$x],0,1) == '#') && (substr($conf[$x],0,$magiclen) != MonoeciConfig::MAGIC)) {
           $lineval = array(0 => $conf[$x]);
         }
         else {
           $lineval = explode('=',$conf[$x]);
         }
-        if (substr($lineval[0],0,$magiclen) == DashConfig::MAGIC) {
+        if (substr($lineval[0],0,$magiclen) == MonoeciConfig::MAGIC) {
           $this->mnctlcfg[substr($lineval[0],$magiclen)] = $lineval[1];
         }
         else {
@@ -69,11 +69,11 @@ class DashConfig {
 
   function __construct($uname) {
 
-    if (file_exists('/home/'.$uname.'/.dashcore/dash.conf')) {
-      $this->configfilename = '/home/'.$uname.'/.dashcore/dash.conf';
+    if (file_exists('/home/'.$uname.'/.monoecicore/monoeci.conf')) {
+      $this->configfilename = '/home/'.$uname.'/.monoecicore/monoeci.conf';
     }
-    elseif (file_exists('/home/'.$uname.'/.dash/dash.conf')) {
-      $this->configfilename = '/home/'.$uname.'/.dash/dash.conf';
+    elseif (file_exists('/home/'.$uname.'/.monoeci/monoeci.conf')) {
+      $this->configfilename = '/home/'.$uname.'/.monoeci/monoeci.conf';
     }
     else {
       $this->configfilename = '/home/'.$uname.'/.darkcoin/darkcoin.conf';
@@ -128,10 +128,10 @@ class DashConfig {
       }
       foreach ($this->mnctlcfg as $key => $value) {
         if ($value === false) {
-          $rawconf .= DashConfig::MAGIC.$key."\n";
+          $rawconf .= MonoeciConfig::MAGIC.$key."\n";
         }
         else {
-          $rawconf .= DashConfig::MAGIC.$key.'='.$value."\n";
+          $rawconf .= MonoeciConfig::MAGIC.$key.'='.$value."\n";
         }
       }
       $res = file_put_contents($this->configfilename,$rawconf);

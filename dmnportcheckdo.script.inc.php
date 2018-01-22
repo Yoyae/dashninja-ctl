@@ -1,21 +1,21 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-ctl
+    This file is part of Monoeci Ninja.
+    https://github.com/Yoyae/monoecininja-ctl
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    Monoeci Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    Monoeci Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with Monoeci Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
@@ -36,22 +36,22 @@ function dmn_checkportopen($ip, $port, $testnet, $config, &$subver, &$errmsg) {
   $magic = hex2bin($config[$testnet]['ProtocolMagic']);
   try
   {
-    $c = new \Dash\Node($ip,$port,DMN_PORTCHECK_TIMEOUT,DMN_VERSION,$sversion,$protocol,$magic);
+    $c = new \Monoeci\Node($ip,$port,DMN_PORTCHECK_TIMEOUT,DMN_VERSION,$sversion,$protocol,$magic);
     $subver = $c->getSubVer();
     $c->closeConnection();
     $res = 1;
   }
-  catch (\Dash\EFailedToReadFromPeer $eftrfp) {
+  catch (\Monoeci\EFailedToReadFromPeer $eftrfp) {
     $subver = '';
     $errmsg = $eftrfp->getMessage();
     $res = 1;
   }
-  catch (\Dash\EUnexpectedFragmentation $euf) {
+  catch (\Monoeci\EUnexpectedFragmentation $euf) {
     $subver = '';
     $errmsg = $euf->getMessage();
     $res = 1;
   }
-  catch (\Dash\EUnexpectedPacketType $eupt) {
+  catch (\Monoeci\EUnexpectedPacketType $eupt) {
     $subver = '';
     $errmsg = $eupt->getMessage();
     $res = 3;

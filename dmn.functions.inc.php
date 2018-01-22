@@ -1,21 +1,21 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-ctl
+    This file is part of Monoeci Ninja.
+    https://github.com/Yoyae/monoecininja-ctl
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    Monoeci Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    Monoeci Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with Monoeci Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
@@ -26,13 +26,13 @@ function xecho($line) {
   echo date('Y-m-d H:i:s').' - '.$line;
 }
 
-// Check if PID is running and is dashd
+// Check if PID is running and is monoecid
 function dmn_checkpid($pid) {
   if ($pid !== false) {
     $output = array();
     exec('ps -o comm -p '.$pid,$output,$retval);
     if (($retval == 0) && (is_array($output)) && (count($output)>=2)) {
-      return (((strlen($output[1]) >= 5) && (substr($output[1], 0, 5) == 'dashd')) || ((strlen($output[1]) >= 9) && (substr($output[1], 0, 9) == 'darkcoind')));
+      return (((strlen($output[1]) >= 5) && (substr($output[1], 0, 5) == 'monoecid')) || ((strlen($output[1]) >= 9) && (substr($output[1], 0, 9) == 'darkcoind')));
     }
     else {
       return false;
@@ -56,17 +56,17 @@ function dmn_getpid($uname,$testnet = false) {
   if (file_exists(DMN_PID_PATH.$uname."/.darkcoin$testinfo/darkcoind.pid") !== FALSE) {
     $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.darkcoin$testinfo/darkcoind.pid"));
   }
-  else if (file_exists(DMN_PID_PATH.$uname."/.dashcore$testinfo/dashd.pid") !== FALSE) {
-    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.dashcore$testinfo/dashd.pid"));
+  else if (file_exists(DMN_PID_PATH.$uname."/.monoecicore$testinfo/monoecid.pid") !== FALSE) {
+    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.monoecicore$testinfo/monoecid.pid"));
   }
-  else if (file_exists(DMN_PID_PATH.$uname."/.dashcore$testinfo/dash.pid") !== FALSE) {
-    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.dashcore$testinfo/dash.pid"));
+  else if (file_exists(DMN_PID_PATH.$uname."/.monoecicore$testinfo/monoeci.pid") !== FALSE) {
+    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.monoecicore$testinfo/monoeci.pid"));
   }
-  else if (file_exists(DMN_PID_PATH.$uname."/.dash$testinfo/dashd.pid") !== FALSE) {
-    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.dash$testinfo/dashd.pid"));
+  else if (file_exists(DMN_PID_PATH.$uname."/.monoeci$testinfo/monoecid.pid") !== FALSE) {
+    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.monoeci$testinfo/monoecid.pid"));
   }
-  else if (file_exists(DMN_PID_PATH.$uname."/.dash$testinfo/dash.pid") !== FALSE) {
-    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.dash$testinfo/dash.pid"));
+  else if (file_exists(DMN_PID_PATH.$uname."/.monoeci$testinfo/monoeci.pid") !== FALSE) {
+    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.monoeci$testinfo/monoeci.pid"));
   }
   else {
     $res = false;
@@ -90,7 +90,7 @@ function dmn_getuid($uname,&$gid) {
 
 }
 
-// Run Dash Ninja public webservice GET method command
+// Run Monoeci Ninja public webservice GET method command
 function dmn_api_get($command,$payload = array(),&$response) {
 
   global $argv;
@@ -125,7 +125,7 @@ function dmn_api_get($command,$payload = array(),&$response) {
 
 }
 
-// Run Dash Ninja webservice GET method command
+// Run Monoeci Ninja webservice GET method command
 function dmn_cmd_get($command,$payload = array(),&$response) {
 
   global $argv;
@@ -164,7 +164,7 @@ function dmn_cmd_get($command,$payload = array(),&$response) {
 
 }
 
-// Run Dash Masternode Ninja webservice POST method command
+// Run Monoeci Masternode Ninja webservice POST method command
 function dmn_cmd_post($command,$payload,&$response) {
 
   global $argv;
@@ -204,8 +204,8 @@ function dmn_cmd_post($command,$payload,&$response) {
 
 }
 
-// Get dashd version from binary
-function dmn_dashdversion($dpath) {
+// Get monoecid version from binary
+function dmn_monoecidversion($dpath) {
 
   if (file_exists($dpath) || is_link($dpath)) {
     exec($dpath.' -?',$output,$retval);
@@ -215,7 +215,7 @@ function dmn_dashdversion($dpath) {
     else if (preg_match("/Darkcoin Core Daemon version v(.*)/", $output[0], $output_array) == 1) {
       return $output_array[1];
     }
-    else if (preg_match("/Dash Core Daemon version v(.*)/", $output[0], $output_array) == 1) {
+    else if (preg_match("/Monoeci Core Daemon version v(.*)/", $output[0], $output_array) == 1) {
       return $output_array[1];
     }
     else {

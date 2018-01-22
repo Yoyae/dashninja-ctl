@@ -1,21 +1,21 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-ctl
+    This file is part of Monoeci Ninja.
+    https://github.com/Yoyae/monoecininja-ctl
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    Monoeci Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    Monoeci Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with Monoeci Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
@@ -57,7 +57,7 @@ if ($res !== false) {
     $tp["btcdrk"] = array("StatValue" => $res["return"]["markets"]["DRK"]["lasttradeprice"],
                           "LastUpdate" => time(),
                           "Source" => "cryptsy");
-    echo "OK (".$res["return"]["markets"]["DRK"]["lasttradeprice"]." BTC/DASH)\n";
+    echo "OK (".$res["return"]["markets"]["DRK"]["lasttradeprice"]." BTC/MONOECI)\n";
   }
   else {
     echo "Failed (JSON)\n";
@@ -73,12 +73,12 @@ $res = file_get_contents('https://poloniex.com/public?command=returnTicker');
 if ($res !== false) {
   $res = json_decode($res,true);
 //  var_dump($res);
-  if (($res !== false) && is_array($res) && (count($res) > 0) && array_key_exists('BTC_DASH',$res)
-      && is_array($res["BTC_DASH"]) && array_key_exists("last",$res["BTC_DASH"])) {
-    $tp["btcdrk"] = array("StatValue" => $res["BTC_DASH"]["last"],
+  if (($res !== false) && is_array($res) && (count($res) > 0) && array_key_exists('BTC_MONOECI',$res)
+      && is_array($res["BTC_MONOECI"]) && array_key_exists("last",$res["BTC_MONOECI"])) {
+    $tp["btcdrk"] = array("StatValue" => $res["BTC_MONOECI"]["last"],
         "LastUpdate" => time(),
         "Source" => "poloniex");
-    echo "OK (".$res["BTC_DASH"]["last"]." BTC/DASH)\n";
+    echo "OK (".$res["BTC_MONOECI"]["last"]." BTC/MONOECI)\n";
   }
   else {
     echo "Failed (JSON)\n";
@@ -170,14 +170,14 @@ else {
   echo "Failed (GET)\n";
 }
 
-// https://bittrex.com/api/v1.1/public/getticker?market=BTC-DASH
+// https://bittrex.com/api/v1.1/public/getticker?market=BTC-MONOECI
 
 xecho("Fetching from CoinMarketCap: ");
-$res = file_get_contents('http://coinmarketcap-nexuist.rhcloud.com/api/dash');
+$res = file_get_contents('http://coinmarketcap-nexuist.rhcloud.com/api/monoeci');
 $resdone = 0;
 if ($res !== false) {
   $res = json_decode($res,true);
-  if (($res !== false) && is_array($res) && array_key_exists('symbol',$res) && ($res['symbol'] == 'dash') && array_key_exists('timestamp',$res)) {
+  if (($res !== false) && is_array($res) && array_key_exists('symbol',$res) && ($res['symbol'] == 'monoeci') && array_key_exists('timestamp',$res)) {
     $tbstamp = date('Y-m-d H:i:s',$res['timestamp']);
     if (array_key_exists('position',$res)) {
       $tp["marketcappos"] = array("StatValue" => $res["position"],
@@ -293,8 +293,8 @@ else {
 
 $dw = array();
 
-xecho("Fetching budgets list from DashCentral: ");
-$res = file_get_contents('https://www.dashcentral.org/api/v1/budget?partner='.DMN_DASHWHALE_PARTNERID);
+xecho("Fetching budgets list from MonoeciCentral: ");
+$res = file_get_contents('https://www.monoecicentral.org/api/v1/budget?partner='.DMN_MONOECIWHALE_PARTNERID);
 $proposals = array();
 if ($res !== false) {
   $res = json_decode($res,true);
@@ -317,8 +317,8 @@ else {
 }
 
 foreach($proposals as $proposal) {
-  xecho("Fetching budget $proposal from DashCentral: ");
-  $res = file_get_contents('https://www.dashcentral.org/api/v1/proposal?partner='.DMN_DASHWHALE_PARTNERID.'&hash='.$proposal);
+  xecho("Fetching budget $proposal from MonoeciCentral: ");
+  $res = file_get_contents('https://www.monoecicentral.org/api/v1/proposal?partner='.DMN_MONOECIWHALE_PARTNERID.'&hash='.$proposal);
   $dwentry = array("proposal" => array(),
                    "comments" => array());
   if ($res !== false) {
@@ -369,7 +369,7 @@ foreach($proposals as $proposal) {
 
 xecho("Submitting to web service: ");
 $payload = array("thirdparties" => $tp,
-                 "dashwhale" => $dw);
+                 "monoeciwhale" => $dw);
 $content = dmn_cmd_post('/thirdparties',$payload,$response);
 var_dump($content);
 if (strlen($content) > 0) {
