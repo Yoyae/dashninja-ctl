@@ -3,4 +3,4 @@
 	url = https://github.com/payward/kraken-api-client.git
 [submodule "EasyMonoeci-PHP"]
 	path = EasyMonoeci-PHP
-	url = https://github.com/elbereth/EasyDash-PHP.git
+	url = https://github.com/yoyae/EasyMonoeci-PHP.git
