@@ -22,7 +22,7 @@
 // Indicate for each of your nodes which one you need to retrieve blocktemplate from (bt) and/or block info (block)
 // Best practice for now is only retrieve block from one node and blocktemplate from all
 $unamelist = array(
-       'dmn01' => array('bt' => true,   'block' => false,   'mempool' => false),
+       'monoeci' => array('bt' => true,   'block' => true,   'mempool' => false),
        'dmn02' => array('bt' => true,   'block' => false,   'mempool' => false),
        'dmn03' => array('bt' => true,   'block' => false,   'mempool' => false),
        'dmn04' => array('bt' => true,   'block' => false,   'mempool' => false),

@@ -25,6 +25,7 @@ xecho('dmnthirdpartiesfetch v'.DMN_VERSION."\n");
 
 $tp = array();
 
+//TODO
 xecho("Fetching from Kraken: ");
 try {
   $kraken = new \Payward\KrakenAPI('','');
@@ -293,6 +294,7 @@ else {
 
 $dw = array();
 
+//TODO
 xecho("Fetching budgets list from MonoeciCentral: ");
 $res = file_get_contents('https://www.monoecicentral.org/api/v1/budget?partner='.DMN_MONOECIWHALE_PARTNERID);
 $proposals = array();

@@ -36,10 +36,10 @@ function delTree($dir) {
   }
   return rmdir($dir);
 }
-TODO
+
 xecho("monoecid auto updater (testnet) v1.0\n");
 xecho("Retrieving current latest binary date and size: ");
-$test = get_headers("https://monoecipay.atlassian.net/builds/browse/MONOECIL-DEV/latest/artifact/JOB1/gitian-linux-monoeci-dist/monoeci-0.12.0-linux64.tar.gz", 1);
+$test = get_headers("https://github.com/monacocoin-net/monoeci-core/releases/download/monoeciCore-0.12.2-linux64-cli.Ubuntu16.04.tar.gz", 1);
 echo $test["Last-Modified"]."\n";
 
 $datanew = sha1(serialize(array("Last-Modified" => $test["Last-Modified"],
@@ -63,11 +63,11 @@ if ($datanew != $dataold) {
   $tmpdir = tempdir("monoecidupdater");
   $curdir = getcwd();
   chdir($tmpdir);
-  passthru("wget -q https://monoecipay.atlassian.net/builds/browse/MONOECIL-DEV/latest/artifact/JOB1/gitian-linux-monoeci-dist/monoeci-0.12.0-linux64.tar.gz");
+  passthru("wget -q https://github.com/monacocoin-net/monoeci-core/releases/download/monoeciCore-0.12.2-linux64-cli.Ubuntu16.04.tar.gz");
   echo "OK... Untar: ";
-  passthru("tar xvf monoeci-0.12.0-linux64.tar.gz");
+  passthru("tar xvf monoeciCore-0.12.2-linux64-cli.Ubuntu16.04.tar.gz");
   echo "OK... Version: ";
-  $fnam = $tmpdir."/monoeci-0.12.0/bin/monoecid";
+  $fnam = $tmpdir."/monoecid";
   $versionraw = dmn_monoecidversion($fnam);
   echo $versionraw."... Moving: ";
   $fnamnew = "/opt/monoecid/0.12/monoecid-$versionraw";

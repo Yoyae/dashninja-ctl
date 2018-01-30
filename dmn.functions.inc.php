@@ -32,7 +32,7 @@ function dmn_checkpid($pid) {
     $output = array();
     exec('ps -o comm -p '.$pid,$output,$retval);
     if (($retval == 0) && (is_array($output)) && (count($output)>=2)) {
-      return (((strlen($output[1]) >= 5) && (substr($output[1], 0, 5) == 'monoecid')) || ((strlen($output[1]) >= 9) && (substr($output[1], 0, 9) == 'darkcoind')));
+      return ((strlen($output[1]) >= 8) && (substr($output[1], 0, 8) == 'monoecid'));
     }
     else {
       return false;
@@ -53,20 +53,16 @@ function dmn_getpid($uname,$testnet = false) {
   else {
     $testinfo = '';
   }
-  if (file_exists(DMN_PID_PATH.$uname."/.darkcoin$testinfo/darkcoind.pid") !== FALSE) {
-    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.darkcoin$testinfo/darkcoind.pid"));
+  if (file_exists('/home/'.$uname."/.monacocoinCore$testinfo/monacocoind.pid") !== FALSE) {
+    $res = trim(file_get_contents('/home/'.$uname."/.monacocoinCore$testinfo/monacocoind.pid"));
+	echo("\nMonaco PID".$res);
   }
-  else if (file_exists(DMN_PID_PATH.$uname."/.monoecicore$testinfo/monoecid.pid") !== FALSE) {
-    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.monoecicore$testinfo/monoecid.pid"));
+  else if (file_exists('/home/'.$uname."/.monoeciCore$testinfo/monoecid.pid") !== FALSE) {
+    $res = trim(file_get_contents('/home/'.$uname."/.monoeciCore$testinfo/monoecid.pid"));
   }
-  else if (file_exists(DMN_PID_PATH.$uname."/.monoecicore$testinfo/monoeci.pid") !== FALSE) {
-    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.monoecicore$testinfo/monoeci.pid"));
-  }
-  else if (file_exists(DMN_PID_PATH.$uname."/.monoeci$testinfo/monoecid.pid") !== FALSE) {
-    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.monoeci$testinfo/monoecid.pid"));
-  }
-  else if (file_exists(DMN_PID_PATH.$uname."/.monoeci$testinfo/monoeci.pid") !== FALSE) {
-    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.monoeci$testinfo/monoeci.pid"));
+  else if (file_exists('/home/'.$uname."/.monoeci$testinfo/monoecid.pid") !== FALSE) {
+    $res = trim(file_get_contents('/home/'.$uname."/.monoeci$testinfo/monoecid.pid"));
+	echo("\monoeci PID".$res);
   }
   else {
     $res = false;
@@ -101,8 +97,8 @@ function dmn_api_get($command,$payload = array(),&$response) {
 
   $ch = curl_init();
   curl_setopt( $ch, CURLOPT_USERAGENT, basename($argv[0])."/".DMN_VERSION );
-  curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
-  curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
+//  curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
+//  curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
   curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 10 );
   curl_setopt( $ch, CURLOPT_TIMEOUT, 30 );
   curl_setopt( $ch, CURLOPT_MAXREDIRS, 0 );
@@ -136,13 +132,13 @@ function dmn_cmd_get($command,$payload = array(),&$response) {
 
   $ch = curl_init();
   curl_setopt( $ch, CURLOPT_USERAGENT, basename($argv[0])."/".DMN_VERSION );
-  curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
-  curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
-  curl_setopt( $ch, CURLOPT_SSLCERT, DMN_SSL_CERT);
-  curl_setopt( $ch, CURLOPT_SSLKEY, DMN_SSL_KEY);
-  curl_setopt( $ch, CURLOPT_CAINFO, DMN_SSL_CAINFO );
+//  curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
+//  curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
+//  curl_setopt( $ch, CURLOPT_SSLCERT, DMN_SSL_CERT);
+//  curl_setopt( $ch, CURLOPT_SSLKEY, DMN_SSL_KEY);
+//  curl_setopt( $ch, CURLOPT_CAINFO, DMN_SSL_CAINFO );
   curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 10 );
-  curl_setopt( $ch, CURLOPT_INTERFACE, DMN_INTERFACE );
+//  curl_setopt( $ch, CURLOPT_INTERFACE, DMN_INTERFACE );
   curl_setopt( $ch, CURLOPT_TIMEOUT, 30 );
   curl_setopt( $ch, CURLOPT_MAXREDIRS, 0 );
   curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true);
@@ -156,7 +152,7 @@ function dmn_cmd_get($command,$payload = array(),&$response) {
   curl_setopt( $ch, CURLOPT_HTTPHEADER, array(
       'Content-Length: 0'
   ) );
-
+  
   $content = curl_exec( $ch );
   $response = curl_getinfo( $ch );
 
@@ -175,13 +171,13 @@ function dmn_cmd_post($command,$payload,&$response) {
   $ch = curl_init();
   curl_setopt( $ch, CURLOPT_USERAGENT, basename($argv[0])."/".DMN_VERSION );
   curl_setopt( $ch, CURLOPT_URL, DMN_URL_CMD.$command );
-  curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
-  curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
-  curl_setopt( $ch, CURLOPT_SSLCERT, DMN_SSL_CERT);
-  curl_setopt( $ch, CURLOPT_SSLKEY, DMN_SSL_KEY);
-  curl_setopt( $ch, CURLOPT_CAINFO, DMN_SSL_CAINFO );
+//  curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
+//  curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
+//  curl_setopt( $ch, CURLOPT_SSLCERT, DMN_SSL_CERT);
+//  curl_setopt( $ch, CURLOPT_SSLKEY, DMN_SSL_KEY);
+//  curl_setopt( $ch, CURLOPT_CAINFO, DMN_SSL_CAINFO );
   curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 10 );
-  curl_setopt( $ch, CURLOPT_INTERFACE, DMN_INTERFACE );
+//  curl_setopt( $ch, CURLOPT_INTERFACE, DMN_INTERFACE );
   curl_setopt( $ch, CURLOPT_TIMEOUT, 30 );
   curl_setopt( $ch, CURLOPT_MAXREDIRS, 0 );
   curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'POST' );
@@ -195,7 +191,7 @@ function dmn_cmd_post($command,$payload,&$response) {
       'Content-Length: ' . strlen($payloadjson))
   );
 
-//  curl_setopt( $ch, CURLOPT_POSTFIELDSIZE, strlen($payloadjson));
+  //curl_setopt( $ch, CURLOPT_POSTFIELDSIZE, strlen($payloadjson));
   curl_setopt( $ch, CURLOPT_POSTFIELDS, $payloadjson );
   $content = curl_exec( $ch );
   $response = curl_getinfo( $ch );

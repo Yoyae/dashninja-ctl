@@ -44,22 +44,27 @@ function dmn_finduname($dmnpid,$uname) {
 }
 
 function dmn_getcountry($mnip,&$countrycode) {
-
   $mnipalone = substr($mnip,0,strpos($mnip,":"));
   $res = geoip_country_name_by_name($mnipalone);
   $countrycode = strtolower(geoip_country_code_by_name($mnipalone));
   return $res;
-
 }
 
 function dmn_getip($pid,$uname) {
 
   $res = false;
-  exec('netstat -ntpl | grep "tcp  " | egrep ":(1)?9999" | grep "'.$pid.'/darkcoind\|'.$pid.'/monoecid"',$output,$retval);
+  exec('netstat -ntpl | grep "tcp  " | egrep ":(1)?24157" | grep "'.$pid.'/darkcoind\|'.$pid.'/monoecid"',$output,$retval);
   if (isset($output[0])) {
     if (preg_match("/tcp        0      0 (\d*\.\d*.\d*.\d*:\d*)/", $output[0], $output_array) == 1) {
       $res = $output_array[1];
     }
+  }
+  //If no IP found, take local IP
+  if(!$res){
+	  exec("ifconfig eth0 | grep ".'"inet addr"'." | cut -d ':' -f 2 | cut -d ' ' -f 1",$output,$retval);
+	  if (isset($output[0])) {
+		 $res = $output[0].':24157';
+	  }	  
   }
   return $res;
 
@@ -85,7 +90,12 @@ function dmn_getpayout($mncount,$difficulty) {
 // Retrieve the PIDs for the hub nodes
 function dmn_getpids($nodes,$isstatus = false,$istestnet) {
   if ($isstatus) {
-    $semfnam = sprintf(DMN_CTLSTATUSAUTO_SEMAPHORE,$istestnet);
+	if($istestnet == 1){
+	    $semfnam = DMN_CTLSTATUSAUTO_TEST_SEMAPHORE;
+	}		
+	else{
+		$semfnam = DMN_CTLSTATUSAUTO_MAIN_SEMAPHORE;
+	}
     if (file_exists($semfnam) && (posix_getpgid(intval(file_get_contents($semfnam))) !== false) ) {
       xecho("Already running (PID ".sprintf('%d',file_get_contents($semfnam)).")\n");
       die(10);
@@ -510,7 +520,7 @@ function dmn_create($dmnpid,$ip,$forcename = '') {
          'alertnotify=echo %s | mail -s "Monoeci MasterNode #'.str_pad($newnum,2,'0',STR_PAD_LEFT).' Alert" somebody@mowhere.blackhole',
          'rpcallowip=127.0.0.1',
          "bind=$ip",
-         'rpcport='.(intval($newnum)+DMNCTLRPCPORTVAL).'998',
+         'rpcport='.(intval($newnum)+DMNCTLRPCPORTVAL).'24156',
          'masternode=0',
          "externalip=$ip",
          '#mnctlcfg#enable=1');
@@ -519,7 +529,7 @@ function dmn_create($dmnpid,$ip,$forcename = '') {
   }
 
   $monoeciconf = implode("\n",$conflist);
-  file_put_contents("/home/$newuname/.monoecicore/monoeci.conf",$monoeciconf);
+  file_put_contents("/home/$newuname/.monoeciCore/monoeci.conf",$monoeciconf);
   echo "OK\n";
   echo "Setting ACL";
   if (file_exists("/home/$newuname/.bash_history")) {
@@ -529,10 +539,10 @@ function dmn_create($dmnpid,$ip,$forcename = '') {
   chmod("/home/$newuname/.profile",0600);
   chmod("/home/$newuname/.bash_logout",0600);
   chmod("/home/$newuname/",0700);
-  chown("/home/$newuname/.monoecicore/",$newuname);
-  chgrp("/home/$newuname/.monoecicore/",$newuname);
-  chown("/home/$newuname/.monoecicore/monoeci.conf",$newuname);
-  chgrp("/home/$newuname/.monoecicore/monoeci.conf",$newuname);
+  chown("/home/$newuname/.monoeciCore/",$newuname);
+  chgrp("/home/$newuname/.monoeciCore/",$newuname);
+  chown("/home/$newuname/.monoeciCore/monoeci.conf",$newuname);
+  chgrp("/home/$newuname/.monoeciCore/monoeci.conf",$newuname);
   echo "OK\n";
   echo "Add to /etc/network/interfaces\n";
   echo "        post-up /sbin/ifconfig eth0:$newnum $ip netmask 255.255.255.255 broadcast $ip\n";
@@ -775,7 +785,7 @@ function dmn_status($dmnpid,$istestnet) {
   // First check the pid and getinfo for all nodes
   foreach($dmnpid as $dmnnum => $dmnpidinfo) {
     $uname = $dmnpidinfo['uname'];
-    $dmnpid[$dmnnum]['pidstatus'] = dmn_checkpid($dmnpidinfo['pid']);
+    $dmnpid[$dmnnum]['pidstatus'] = TRUE;//dmn_checkpid($dmnpidinfo['pid']);
     if (($dmnpid[$dmnnum]['pidstatus']) && ($dmnpidinfo['currentbin'] != '')) {
       $commands[] = array("status" => 0,
                           "dmnnum" => $dmnnum,
@@ -1117,7 +1127,7 @@ function dmn_status($dmnpid,$istestnet) {
       $port = 19999;
     }
     else {
-      $port = 9999;
+      $port = 24157;
     }
 
     // Default values
@@ -1631,12 +1641,14 @@ function dmn_status($dmnpid,$istestnet) {
     $estpayoutdaily = '???';
   }
 
-//  echo "Total Masternodes: $mncount/$mncountinactive    Est.Payout: $estpayoutdaily MONOECI/day (diff=$difficultyfinal)\n";
+//  echo "Total Masternodes: $mncount/$mncountinactive    Est.Payout: $estpayoutdaily XMCC/day (diff=$difficultyfinal)\n";
 
   if (count($wsstatus)>0) {
     $wsmninfo = array();
     $wsmnlist = array();
+
     foreach($mnlistfinal as $ip => $mninfo) {
+
       $ipport = explode(":",$ip);
       $mnip = $ipport[0];
       $mnport = $ipport[1];
@@ -1839,6 +1851,7 @@ function dmn_status($dmnpid,$istestnet) {
                                       'governancenextsuperblock' => $governancenextsb[$istestnet],
                                       'governancebudget' =>  $governancebudget[$istestnet]));
     $contentraw = dmn_cmd_post('ping',$payload,$response);
+	
     if (strlen($contentraw) > 0) {
       $content = json_decode($contentraw,true);
       if (($response['http_code'] >= 200) && ($response['http_code'] <= 299)) {
@@ -2066,7 +2079,12 @@ elseif (strcasecmp($argv[1],'enable') == 0) {
   dmn_enable($dmnpid,$dmntoenable);
 }
 elseif (strcasecmp($argv[1],'status') == 0) {
-  $semfnam = sprintf(DMN_CTLSTATUSAUTO_SEMAPHORE,$istestnet);
+  if($istestnet == 1){
+  	$semfnam = DMN_CTLSTATUSAUTO_TEST_SEMAPHORE;
+  }		
+  else{
+  	$semfnam = DMN_CTLSTATUSAUTO_MAIN_SEMAPHORE;
+  }
   file_put_contents($semfnam,sprintf('%s',getmypid()));
   dmn_status($dmnpidstatus,$istestnet);
   unlink($semfnam);

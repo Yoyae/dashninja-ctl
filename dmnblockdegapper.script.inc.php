@@ -36,7 +36,7 @@ if ($argc == 2) {
     else {
         $display = "mainnet";
         $testnet = 0;
-        $uname = 'p2pool';
+        $uname = 'monoeci';
     }
 }
 else {

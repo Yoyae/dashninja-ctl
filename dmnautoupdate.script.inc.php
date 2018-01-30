@@ -55,12 +55,12 @@ else {
     $data = array("Content-Length" => "-1",'Last-Modified' => 'Always');
 }
 
-xecho("Fetching from MONOECI Atlassian Bamboo server: ");
+xecho("Fetching from Monoeci server: ");
 
 $url = DMN_AUTOUPDATE_TEST;
 $headers = get_headers($url, 1);
 $dt = NULL;
-if ((is_array($headers) && array_key_exists(0,$headers) && strstr($headers[0], '200'))) {
+if (is_array($headers) && array_key_exists(0,$headers) && ((strstr($headers[0], '200')) || (strstr($headers[0], '302')))) {
     $dt = new \DateTime($headers['Last-Modified']);
     echo "OK (".$dt->format('Y-m-d H:i:s')." / ".$headers['Content-Length']." bytes)\n";
 }
@@ -118,19 +118,19 @@ else {
         }
         closedir($handle);
     }
-    $monoecidpath = $tdir."/".$folder."/bin/monoecid";
+    $monoecidpath = $tdir."/monoecid";
     if (($folder === FALSE) || (!file_exists($monoecidpath))) {
         echo "ERROR (Could not extract correctly)\n";
         die2(5);
     }
     echo "OK (".$monoecidpath.")\n";
     xecho("Retrieving version number: ");
-    exec($monoecidpath." -?",$output,$ret);
+    exec("monoecid -?",$output,$ret); //exec($monoecidpath." -?",$output,$ret);
     if ($ret != 0) {
         echo "ERROR (monoecid return code $ret)\n";
         die2(5);
     }
-    if (!preg_match('/^Monoeci Core Daemon version v(.+)$/',$output[0],$match)) {
+    if (!preg_match('/^monoeci Core Daemon version v(.+)$/',$output[0],$match)) {
         echo "ERROR (monoecid return version do not match regexp '".$output[0]."')\n";
         die2(6);
     };
@@ -138,22 +138,19 @@ else {
     echo "OK (".$version.")\n";
     xecho("Adding new version to database: ");
     rename($monoecidpath,"/opt/monoecid/0.12/monoecid-".$version);
-    exec("/opt/dmnctl/dmnctl version /opt/monoecid/0.12/monoecid-".$version." ".$version." 1 1",$output,$ret);
-    var_dump($output);
-    var_dump($ret);
+    //exec("/opt/monoecininja-ctl/dmnctl version monoecid ".$version." 1 1",$output,$ret); 
+	exec("/opt/monoecininja-ctl/dmnctl version /opt/monoecid/0.12/monoecid-".$version." ".$version." 1 1",$output,$ret);
     delTree($tdir);
     echo "OK\n";
     xecho("Restarting testnet node: ");
-    exec("/opt/dmnctl/dmnctl restart testnet p2pool",$output,$ret);
+    exec("/opt/monoecininja-ctl/dmnctl restart testnet p2pool",$output,$ret);
     if ($ret != 0) {
         echo "ERROR (return code of dmnctl restart was $ret)\n";
-        var_dump($output);
         die2(8);
     }
-    exec("/opt/dmnctl/dmnctl restart testnet masternode",$output,$ret);
+    exec("/opt/monoecininja-ctl/dmnctl restart testnet masternode",$output,$ret);
     if ($ret != 0) {
         echo "ERROR (return code of dmnctl restart was $ret)\n";
-        var_dump($output);
         die2(8);
     }
     echo "OK\n";

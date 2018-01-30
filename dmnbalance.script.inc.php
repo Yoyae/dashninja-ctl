@@ -184,7 +184,7 @@ foreach($mncheck as $mnpubkey) {
     echo "Error\n";
   }
   else {
-    $mncurbalance = floatval($res);
+    $mncurbalance = floatval($res) * 0.00000001;
     $mncurbalancerdisplay = sprintf("%.9f",$mncurbalance);
     echo "$mncurbalancerdisplay MONOECI\n";
     $payload[] = array('TestNet' => 0,
@@ -203,7 +203,7 @@ foreach($tncheck as $mnpubkey) {
     echo "Error\n";
   }
   else {
-    $mncurbalance = floatval($res);
+    $mncurbalance = floatval($res) * 0.00000001;
     $mncurbalancerdisplay = sprintf("%.9f",$mncurbalance);
     echo "$mncurbalancerdisplay MONOECI\n";
     $payload[] = array('TestNet' => 1,

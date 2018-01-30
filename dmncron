@@ -36,17 +36,19 @@ if [[ "$1" == "log" ]]; then
 fi
 
 # Sequentially run scripts
-#/opt/dmnctl/monoecidupdate >> $updatelog
-/opt/dmnctl/dmnctl status >> $statuslog
-#/opt/dmnctl/dmnvotesrrd >> $votesrrdlog
-/usr/bin/php /home/monoeci-mnwww/www/main/api/cron.php main nodesstatus >> $statuslog
-/usr/bin/php /home/monoeci-mnwww/www/main/api/cron.php main blocksconsensus >> $statuslog
-/usr/bin/php /home/monoeci-mnwww/www/main/api/cron.php main votelimit >> $statuslog
-/usr/bin/php /home/monoeci-mnwww/www/main/api/cron.php main masternodeslistfull >> $statuslog
-/usr/bin/php /home/monoeci-mnwww/www/main/api/cron.php main governanceproposals >> $statuslog
-/usr/bin/php /home/monoeci-mnwww/www/main/api/cron.php main governancetriggers >> $statuslog
+#/opt/monoecininja-ctl/monoecidupdate >> $updatelog
+/opt/monoecininja-ctl/dmnctl status >> $statuslog
+#/opt/monoecininja-ctl/dmnvotesrrd >> $votesrrdlog
+
+#/usr/bin/php /var/www/html/main/api/cron.php main blocks24h >> $statuslog
+/usr/bin/php /var/www/html/main/api/cron.php main nodesstatus >> $statuslog
+/usr/bin/php /var/www/html/main/api/cron.php main blocksconsensus >> $statuslog
+/usr/bin/php /var/www/html/main/api/cron.php main votelimit >> $statuslog
+/usr/bin/php /var/www/html/main/api/cron.php main masternodeslistfull >> $statuslog
+/usr/bin/php /var/www/html/main/api/cron.php main governanceproposals >> $statuslog
+/usr/bin/php /var/www/html/main/api/cron.php main governancetriggers >> $statuslog
 
 # Concurrently run scripts
-/usr/bin/nice -n 18 /opt/dmnctl/dmnbalance >> $balancelog &
-/usr/bin/nice -n 19 /opt/dmnctl/dmnportcheck db >> $portchecklog &
-/usr/bin/nice -n 15 /opt/dmnctl/dmnautoupdate >> $autoupdatelog &
+/usr/bin/nice -n 18 /opt/monoecininja-ctl/dmnbalance >> $balancelog &
+/usr/bin/nice -n 19 /opt/monoecininja-ctl/dmnportcheck db >> $portchecklog &
+/usr/bin/nice -n 15 /opt/monoecininja-ctl/dmnautoupdate >> $autoupdatelog &

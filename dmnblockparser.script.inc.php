@@ -439,13 +439,10 @@ function dmn_blockparse($uname, $testnet, $mnpubkeys, $mndonations, $poolpubkeys
       $minprotocol = 0;
       $maxprotocol = 9999999999;
       if ($block["version"] == 536870914) {
-        $minprotocol = 70208;
-      }
-      else if ($block["version"] == 536870912) {
         $minprotocol = 70206;
       }
       else if ($block["version"] == 3) {
-          $maxprotocol = 70103;
+          $maxprotocol = 70306;
       }
       if (($block !== false) && isset($block) && array_key_exists('height',$block)) {
         if ($block['height'] == $blockid) {

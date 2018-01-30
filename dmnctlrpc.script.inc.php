@@ -37,7 +37,7 @@
   $outputfile = $argv[3];
   $nodepath1 = DMN_PID_PATH.$uname.'/.darkcoin/';
 $nodepath2 = DMN_PID_PATH.$uname.'/.monoeci/';
-$nodepath3 = DMN_PID_PATH.$uname.'/.monoecicore/';
+$nodepath3 = DMN_PID_PATH.$uname.'/.monoeciCore/';
 
   if (is_dir($nodepath1)) {
     $nodepath = $nodepath1;

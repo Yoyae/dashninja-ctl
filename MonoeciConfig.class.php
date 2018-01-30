@@ -69,18 +69,16 @@ class MonoeciConfig {
 
   function __construct($uname) {
 
-    if (file_exists('/home/'.$uname.'/.monoecicore/monoeci.conf')) {
-      $this->configfilename = '/home/'.$uname.'/.monoecicore/monoeci.conf';
+    if (file_exists('/home/'.$uname.'/.monoeciCore/monoeci.conf')) {
+      $this->configfilename = '/home/'.$uname.'/.monoeciCore/monoeci.conf';
     }
     elseif (file_exists('/home/'.$uname.'/.monoeci/monoeci.conf')) {
       $this->configfilename = '/home/'.$uname.'/.monoeci/monoeci.conf';
     }
-    else {
-      $this->configfilename = '/home/'.$uname.'/.darkcoin/darkcoin.conf';
-    }
+	
     $this->loadconfig();
-
-  }
+	
+	}
 
   function getconfig($key) {
 
@@ -88,6 +86,8 @@ class MonoeciConfig {
     if (array_key_exists($key,$this->config)) {
       $res = $this->config[$key];
     }
+		
+	echo($res);
     return $res;
 
   }
@@ -104,6 +104,7 @@ class MonoeciConfig {
     if (array_key_exists($key,$this->mnctlcfg)) {
       $res = $this->mnctlcfg[$key];
     }
+
     return $res;
 
   }

@@ -52,7 +52,7 @@ class Node {
         private $subver;
         private $prot_magic;
 
-	public function __construct($ip, $port = 9999, $timeout = 5, $versionid = '1.0.0', $sversionid = '0.12.0.53', $protver = PROTOCOL_VERSION, $prot_magic = PROTOCOL_MAGIC) {
+	public function __construct($ip, $port = 24157, $timeout = 5, $versionid = '1.0.0', $sversionid = '0.12.2.0', $protver = PROTOCOL_VERSION, $prot_magic = PROTOCOL_MAGIC) {
 		$this->sock = @fsockopen($ip, $port, $errno, $errstr, $timeout);
 		if (!$this->sock) throw new Exception($errstr, $errno);
 

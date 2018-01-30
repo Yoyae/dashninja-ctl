@@ -117,8 +117,8 @@ function dmn_stop($uname,$conf) {
         $res = false;
       }
       else {
-        if (file_exists('/home/'.$uname."/.darkcoin$testinfo/darkcoind.pid")) {
-          unlink('/home/'.$uname."/.darkcoin$testinfo/darkcoind.pid");
+        if (file_exists('/home/'.$uname."/.monoeciCore$testinfo/monoecid.pid")) {
+          unlink('/home/'.$uname."/.monoeciCore$testinfo/monoecid.pid");
         }
         if (file_exists('/home/'.$uname."/.monoeci$testinfo/monoecid.pid")) {
           unlink('/home/'.$uname."/.monoeci$testinfo/monoecid.pid");
@@ -139,6 +139,9 @@ function dmn_stop($uname,$conf) {
   return $res;
 
 }
+
+echo "\n";
+die(0);
 
 if (($argc < 3) && ($argv > 5)) {
   xecho("Usage: ".basename($argv[0])." uname (start|stop|restart) [monoecid] [extra_params]\n");

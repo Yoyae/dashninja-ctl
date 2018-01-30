@@ -32,6 +32,8 @@ function xecho($line) {
 
 $verbose = (($argc == 4) && ($argv[3] == 'verbose'));
 
+$verbose = true;
+
 if ($verbose) {
   xecho('MonoeciNinja.pl Block Notify v'.MONOECIBLOCKNOTIFY."\n");
 }
@@ -49,8 +51,6 @@ if ($uname == 'auto') {
   $uname = $uname['name'];
 }
 $blockhash = $argv[2];
-
-//$verbose = true;
 
 if ($verbose) {
   xecho("Block received from $uname, retrieving RPC configuration: ");

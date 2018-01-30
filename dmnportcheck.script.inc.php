@@ -173,11 +173,11 @@ else {
       echo " Incorrect data!\n";
       die(202);
     }
-    $mnips = array();
+    $mnipsmain = array();
     foreach($mnlist['data']['masternodes'] as $mnip) {
-      $mnips[] = $mnip['MasternodeIP'].'-'.$mnip['MasternodePort'].'-0';
+      $mnipsmain[] = $mnip['MasternodeIP'].'-'.$mnip['MasternodePort'].'-0';
     }
-    echo " OK (".count($mnips)." masternodes)\n";
+    echo " OK (".count($mnipsmain)." masternodes)\n";
   }
   else {
     echo "Failed [".$response['http_code']."]\n";
@@ -204,10 +204,11 @@ else {
       echo " Incorrect data!\n";
       die(202);
     }
+    $mnipstest = array();
     foreach($mnlist['data']['masternodes'] as $mnip) {
-      $mnips[] = $mnip['MasternodeIP'].'-'.$mnip['MasternodePort'].'-1';
+      $mnipstest[] = $mnip['MasternodeIP'].'-'.$mnip['MasternodePort'].'-1';
     }
-    echo " OK (".count($mnlist['data'])." masternodes)\n";
+    echo " OK (".count($mnipstest)." masternodes)\n";
   }
   else {
     echo "Failed [".$response['http_code']."]\n";
@@ -222,6 +223,8 @@ else {
     die(201);
   }
 
+  $mnips = array_merge($mnipsmain, $mnipstest);
+  
   xecho("Computing nodes to check: ");
   $num = 0;
   $numok = 0;
